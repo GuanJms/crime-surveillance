@@ -1,0 +1,41 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+
+actor Citizen
+actor Patrol
+actor Dispatcher
+actor Admin
+
+Citizen <|-- Patrol
+Citizen <|-- Dispatcher
+Citizen <|-- Admin
+Patrol  <|-- Admin
+Dispatcher <|-- Admin
+
+
+usecase "Report crime" as UC_ReportCrime
+usecase "View crime" as UC_ViewCrime
+usecase "Assign patrol to crime" as UC_AssignPatrol
+usecase "Update patrol status" as UC_UpdatePatrol
+usecase "Update crime status" as UC_UpdateCrime
+usecase "View patrol status" as UC_ViewPatrol
+usecase "View logs" as UC_ViewLogs
+usecase "Create citizen" as UC_CreateCitizen
+usecase "Upgrade citizen to Dispatcher" as UC_UpgradeDispatcher
+usecase "Upgrade citizen to Patrol" as UC_UpgradePatrol
+
+Citizen -- UC_ReportCrime
+Citizen -- UC_ViewCrime
+
+Patrol -- UC_UpdatePatrol
+Patrol -- UC_UpdateCrime
+
+Dispatcher -- UC_ViewPatrol
+Dispatcher -- UC_AssignPatrol
+
+Admin -- UC_ViewLogs
+Admin -- UC_CreateCitizen
+Admin -- UC_UpgradeDispatcher
+Admin -- UC_UpgradePatrol
+@enduml

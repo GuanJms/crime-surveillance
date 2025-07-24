@@ -1,0 +1,92 @@
+@startuml
+
+!define table(x) class x << (T,#FFAAAA) >>
+!define kvstore(x) class x << (K,#FFD700) >>
+package "PostgreSQL" {
+
+
+    ' Define the enum
+    enum crime_status{
+        NEW
+        ASSIGNED
+        RESOLVED
+    }
+
+    enum patrol_status{
+        AVAILABLE
+        BUSY
+    }
+
+
+    table(users) {
+        id : UUID [PK]
+        username : string <<UNIQUE>>
+        password_hash : string
+        role : string
+        created_at : timestamp
+        updated_at : timestamp
+        last_login : timestamp
+        last_activity : timestamp
+        status: crime_status
+    }
+
+    table(patrol_profile){
+        user_id : UUID [PK, FK]
+        officer_id: string <<UNIQUE>>
+        officer_name : string
+        street : string
+        city : string
+        state : string
+        latitude : double
+        longitude : double
+        created_at : timestamp
+        updated_at : timestamp
+    }
+
+    table(crime){
+        id : UUID [PK]
+        reporter_id : UUID [FK]
+        description : string
+        street : string
+        city : string
+        state : string
+        latitude : double
+        longitude : double
+        reported_at : timestamp
+        created_at : timestamp
+        updated_at : timestamp
+    }
+
+    table(event_log){
+        id : UUID [PK]
+        user_id : UUID [FK]
+        service: string
+        message: JSONB
+        created_at: datetime
+    }
+
+    users "1" -- "0..1" patrol_profile : has_profile >
+    users "1" -- "0..*" crime : reports >
+}
+
+' ' MongoDB collections
+' package "MongoDB" {
+'     collection(EventLog) {
+'         _id : ObjectId
+'         user_id: UUID
+'         service: string
+'         message: string
+'         time: datetime
+'     }
+' }
+
+' Redis keys
+package "Redis" {
+    kvstore(Location) {
+        key = user:{id}:location
+        value = street, city, state, latitude, longtitude, timestamp
+        TTL = 30 seconds
+    }
+}
+
+@enduml

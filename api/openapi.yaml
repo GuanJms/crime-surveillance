@@ -1,0 +1,336 @@
+openapi: 3.0.3
+
+info:
+  title: Realtime Crime Surveillance System API
+  description: A simple API to report crime and dispatch police patrol
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local Dev Server
+
+paths:
+  /crimes:
+    get:
+      summary: List all crimes reports
+      responses:
+        '200':
+          description: A list of crimes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Crime'
+    post:
+      summary: Add a new crime
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCrime'
+      responses:
+        '201':
+          description: New crime created
+        '400':
+          description: Bad request of JSON
+  
+  /crimes/{id}:
+    put:
+      summary: Update a crime status or assign
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCrime'
+      responses:
+        '200':
+          description: Crime updated
+        '404':
+          description: Crime not found
+    delete:
+      summary:  Delete a crime by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: 
+            type: integer
+      responses:
+        '204':
+          description: Crime deleted successfully
+        '404':
+          description: Crime not found
+
+  /patrols:
+    post:
+      summary: Register a police patrol
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPatrol'
+      responses:
+        '201':
+          description: Patrol unit created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patrol'
+    get:
+      summary: List all patrols and status
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: A list of patrols with status
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Patrol'
+  /patrols/{id}:
+    get:
+      summary: Get patrol info
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully return patrol info
+          content:
+            application/json:
+              schema:
+                $ref : '#/components/schemas/Patrol'
+        '404':
+          description: Patrol not found
+
+    put:
+      summary: Update patrol info
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewStatus'
+      responses:
+        '200':
+          description: Patrol status updated
+        '404':
+          description: Patrol not found
+  
+  /dispatch:
+    post:
+      summary: Assign patrol to an existing crime
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                crimeId:
+                  type: integer
+              required: [crimeId]
+      responses:
+        '200':
+          description: Patrol assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DispatchResult'
+
+  
+  /admin/login:
+    post:
+      summary: Admin sign in for observe system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successfully authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+        '401':
+          description: Unauthorized - invalid or missing credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                   type: string
+
+                
+
+components:
+  schemas:
+    Crime:
+      type: object
+      properties:
+        id:
+          type: integer
+        time:
+          type: string
+          format: date-time
+        location:
+          $ref: '#/components/schemas/Location'
+        description:
+          type: string
+        status:
+          type: string
+          enum: [new, assigned, resolved]
+        suspectDescription:
+          type: string
+      required: [id, time, location, description, status]
+
+    Location:
+      type: object
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+      required: [street, city, state, latitude, longitude]
+
+    NewCrime:
+      type: object
+      properties:
+        location:
+          $ref: '#/components/schemas/Location'
+        description:
+          type: string
+      required: [location, description]
+    
+    UpdateCrime:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [new, assigned, resolved]
+        assignedPatrolId:
+          type: integer
+      required: [status]
+
+    Patrol:
+      type: object
+      properties:
+        id:
+          type: integer
+        officerName:
+          type: string
+        status:
+          type: string
+          enum: [available, busy]
+        location:
+          $ref: '#/components/schemas/Location'
+      required: [id, officerName, status, location]
+
+    NewPatrol:
+      type: object
+      properties:
+        officerName: 
+          type: string
+        status:
+          type: string
+          enum: [available, busy]
+        location:
+          $ref: '#/components/schemas/Location'
+      required: [officerName, status, location]
+
+    NewStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [available, busy]
+        location:
+          $ref: '#/components/schemas/Location'
+      required: [status, location]
+
+    
+    DispatchResult:
+      type: object
+      properties:
+        crime:
+          $ref: '#/components/schemas/Crime'
+        assignedPatrol:
+          $ref: '#/components/schemas/Patrol'
+      required: [crime, assignedPatrol]
+    
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required: [username, password]
+
+    AuthToken:
+      type: object
+      properties:    
+        token:
+          type: string
+      required: [token]
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+    
+
+
+    
+    
+
+

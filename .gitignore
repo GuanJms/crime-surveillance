@@ -1,0 +1,56 @@
+.vscode/
+.idea/
+
+.env
+.env.*
+.env.local
+.env.*.local
+
+# Ignor .VSCodeCounter
+.VSCodeCounter
+
+# Ignore workspace
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+crimeServiceApp
+brokerServiceApp
+
+# Vendor directory
+/vendor/
+
+# Editor/IDE/OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+*.bak
+
+# Test/Database artifacts
+**/testdb/
+**/db_helper.go
+**/test/
+**/db-data/
+**/postgres/
+**/base/
+**/global/
+**/pg_*
+**/postmaster.*
+**/PG_VERSION
+
+# Logs
+*.log
+logs/
+
+# Miscellaneous
+*.out
+*.tmp
+*.cache
+*.map
+
+crime-surveillance.code-workspace

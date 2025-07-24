@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  postgres:
+    image: 'postgres:16'
+    ports:
+      - "5435:5432"
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: crime_system
+    volumes:
+      - ./db-data/postgres/:/var/lib/postgresql/data/
+  
+  crime-service:
+    build:
+      context: ./../crime-service
+      dockerfile: ./../crime-service/crime-service.dockerfile
+    restart: always
+    ports:
+      - "50001:50001"
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      DSN: "host=postgres port=5432 user=postgres password=password dbname=crime_system sslmode=disable timezone=UTC connect_timeout=5"
+
+  broker-service:
+    build:
+      context: ./../broker-service
+      dockerfile: ./../broker-service/broker-service.dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    deploy:
+      mode: replicated
+      replicas: 1
+    

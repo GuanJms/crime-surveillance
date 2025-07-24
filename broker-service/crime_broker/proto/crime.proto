@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package crimebroker;
+
+option go_package = "/crimepb;crimepb";
+
+enum CrimeStatus {
+    NEW = 0;
+    ASSIGNED = 1;
+    RESOLVED = 2;
+}
+
+enum PatrolStatus{
+    AVAILABLE = 0;
+    BUSY = 1;
+}
+
+message Location{
+    string street = 1;
+    string city = 2; 
+    string state = 3;
+    double latitude =4;
+    double longitude =5;
+}
+
+message Crime{
+    string id = 1;
+    string reporter_id = 2;
+    string description = 3;
+    CrimeStatus status = 4;
+    Location location = 5;
+    google.protobuf.Timestamp reported_at = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
+}
+
+message CrimeReportRequest{
+    string reporter_id = 1;
+    string description = 2;
+    Location location = 3;
+}
+
+message UpdateCrimeReportRequest{
+    string id = 1;
+    string reporter_id = 2;
+    optional string description = 3;
+    optional CrimeStatus status = 4;
+    optional Location location = 5;
+}
+
+message DeleteCrimeRequest{
+    string id = 1;
+}
+
+message GetCrimesRequest{
+    optional string id = 1;
+    optional string reporter_id = 2;
+    optional string street = 3;
+    optional string city = 4;
+    optional string state = 5;
+    optional string date = 6;
+    optional CrimeStatus status = 7;
+    repeated string filterKeywords = 8;
+}
+
+message GetCrimesResponse{
+    repeated Crime crimes =1;
+}
+
+message CrimeResponse{
+    string id = 1;
+    bool successful = 2;
+    string message = 3;
+}
+
+service CrimeService{
+    // function the system has 
+    rpc GetAllCrimes(GetCrimesRequest) returns (GetCrimesResponse);
+    rpc SubmitNewCrimeReport(CrimeReportRequest) returns (CrimeResponse);
+    rpc UpdateCrime(UpdateCrimeReportRequest) returns (CrimeResponse);
+    rpc DeleteCrime(DeleteCrimeRequest) returns (CrimeResponse);
+}
+
