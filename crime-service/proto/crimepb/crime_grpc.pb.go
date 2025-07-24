@@ -21,7 +21,8 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	CrimeService_GetAllCrimes_FullMethodName         = "/crimebroker.CrimeService/GetAllCrimes"
 	CrimeService_SubmitNewCrimeReport_FullMethodName = "/crimebroker.CrimeService/SubmitNewCrimeReport"
-	CrimeService_UpdateCrime_FullMethodName          = "/crimebroker.CrimeService/UpdateCrime"
+	CrimeService_PutCrime_FullMethodName             = "/crimebroker.CrimeService/PutCrime"
+	CrimeService_PatchCrime_FullMethodName           = "/crimebroker.CrimeService/PatchCrime"
 	CrimeService_DeleteCrime_FullMethodName          = "/crimebroker.CrimeService/DeleteCrime"
 )
 
@@ -32,7 +33,8 @@ type CrimeServiceClient interface {
 	// function the system has
 	GetAllCrimes(ctx context.Context, in *GetCrimesRequest, opts ...grpc.CallOption) (*GetCrimesResponse, error)
 	SubmitNewCrimeReport(ctx context.Context, in *CrimeReportRequest, opts ...grpc.CallOption) (*CrimeResponse, error)
-	UpdateCrime(ctx context.Context, in *UpdateCrimeReportRequest, opts ...grpc.CallOption) (*CrimeResponse, error)
+	PutCrime(ctx context.Context, in *UpdateCrimeReportRequest, opts ...grpc.CallOption) (*CrimeResponse, error)
+	PatchCrime(ctx context.Context, in *UpdateCrimeReportRequest, opts ...grpc.CallOption) (*CrimeResponse, error)
 	DeleteCrime(ctx context.Context, in *DeleteCrimeRequest, opts ...grpc.CallOption) (*CrimeResponse, error)
 }
 
@@ -64,10 +66,20 @@ func (c *crimeServiceClient) SubmitNewCrimeReport(ctx context.Context, in *Crime
 	return out, nil
 }
 
-func (c *crimeServiceClient) UpdateCrime(ctx context.Context, in *UpdateCrimeReportRequest, opts ...grpc.CallOption) (*CrimeResponse, error) {
+func (c *crimeServiceClient) PutCrime(ctx context.Context, in *UpdateCrimeReportRequest, opts ...grpc.CallOption) (*CrimeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CrimeResponse)
-	err := c.cc.Invoke(ctx, CrimeService_UpdateCrime_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, CrimeService_PutCrime_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *crimeServiceClient) PatchCrime(ctx context.Context, in *UpdateCrimeReportRequest, opts ...grpc.CallOption) (*CrimeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CrimeResponse)
+	err := c.cc.Invoke(ctx, CrimeService_PatchCrime_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +103,8 @@ type CrimeServiceServer interface {
 	// function the system has
 	GetAllCrimes(context.Context, *GetCrimesRequest) (*GetCrimesResponse, error)
 	SubmitNewCrimeReport(context.Context, *CrimeReportRequest) (*CrimeResponse, error)
-	UpdateCrime(context.Context, *UpdateCrimeReportRequest) (*CrimeResponse, error)
+	PutCrime(context.Context, *UpdateCrimeReportRequest) (*CrimeResponse, error)
+	PatchCrime(context.Context, *UpdateCrimeReportRequest) (*CrimeResponse, error)
 	DeleteCrime(context.Context, *DeleteCrimeRequest) (*CrimeResponse, error)
 	mustEmbedUnimplementedCrimeServiceServer()
 }
@@ -109,8 +122,11 @@ func (UnimplementedCrimeServiceServer) GetAllCrimes(context.Context, *GetCrimesR
 func (UnimplementedCrimeServiceServer) SubmitNewCrimeReport(context.Context, *CrimeReportRequest) (*CrimeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitNewCrimeReport not implemented")
 }
-func (UnimplementedCrimeServiceServer) UpdateCrime(context.Context, *UpdateCrimeReportRequest) (*CrimeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateCrime not implemented")
+func (UnimplementedCrimeServiceServer) PutCrime(context.Context, *UpdateCrimeReportRequest) (*CrimeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PutCrime not implemented")
+}
+func (UnimplementedCrimeServiceServer) PatchCrime(context.Context, *UpdateCrimeReportRequest) (*CrimeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PatchCrime not implemented")
 }
 func (UnimplementedCrimeServiceServer) DeleteCrime(context.Context, *DeleteCrimeRequest) (*CrimeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCrime not implemented")
@@ -172,20 +188,38 @@ func _CrimeService_SubmitNewCrimeReport_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CrimeService_UpdateCrime_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _CrimeService_PutCrime_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateCrimeReportRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CrimeServiceServer).UpdateCrime(ctx, in)
+		return srv.(CrimeServiceServer).PutCrime(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CrimeService_UpdateCrime_FullMethodName,
+		FullMethod: CrimeService_PutCrime_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CrimeServiceServer).UpdateCrime(ctx, req.(*UpdateCrimeReportRequest))
+		return srv.(CrimeServiceServer).PutCrime(ctx, req.(*UpdateCrimeReportRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CrimeService_PatchCrime_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCrimeReportRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CrimeServiceServer).PatchCrime(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CrimeService_PatchCrime_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CrimeServiceServer).PatchCrime(ctx, req.(*UpdateCrimeReportRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -224,8 +258,12 @@ var CrimeService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CrimeService_SubmitNewCrimeReport_Handler,
 		},
 		{
-			MethodName: "UpdateCrime",
-			Handler:    _CrimeService_UpdateCrime_Handler,
+			MethodName: "PutCrime",
+			Handler:    _CrimeService_PutCrime_Handler,
+		},
+		{
+			MethodName: "PatchCrime",
+			Handler:    _CrimeService_PatchCrime_Handler,
 		},
 		{
 			MethodName: "DeleteCrime",
