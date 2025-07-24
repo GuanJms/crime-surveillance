@@ -36,3 +36,17 @@ build_broker:
 	cd ../broker-service && env GOOS=linux CGO_ENABLED=0 go build -o ${BROKER_BINARY} ./cmd/api
 	@echo "Done!"
 
+generate_proto_crime:
+	@echo "Generate crime server proto file"
+	cd ../crime-service/proto && \
+	protoc --go_out=. --go-grpc_out=. \
+	--experimental_allow_proto3_optional \
+	--proto_path=. crime.proto
+	@echo "Done!"
+
+	@echo "Generate broker-server crime proto file"
+	cd ../broker-service/crime_broker/proto && \
+	protoc --go_out=. --go-grpc_out=. \
+	--experimental_allow_proto3_optional \
+	--proto_path=. crime.proto
+	@echo "Done!"
