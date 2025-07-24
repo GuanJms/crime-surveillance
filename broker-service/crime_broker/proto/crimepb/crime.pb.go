@@ -197,12 +197,13 @@ type Crime struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	ReporterId    string                 `protobuf:"bytes,2,opt,name=reporter_id,json=reporterId,proto3" json:"reporter_id,omitempty"`
-	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	Status        CrimeStatus            `protobuf:"varint,4,opt,name=status,proto3,enum=crimebroker.CrimeStatus" json:"status,omitempty"`
-	Location      *Location              `protobuf:"bytes,5,opt,name=location,proto3" json:"location,omitempty"`
-	ReportedAt    *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=reported_at,json=reportedAt,proto3" json:"reported_at,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	PatrolId      *string                `protobuf:"bytes,3,opt,name=patrol_id,json=patrolId,proto3,oneof" json:"patrol_id,omitempty"`
+	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	Status        CrimeStatus            `protobuf:"varint,5,opt,name=status,proto3,enum=crimebroker.CrimeStatus" json:"status,omitempty"`
+	Location      *Location              `protobuf:"bytes,6,opt,name=location,proto3" json:"location,omitempty"`
+	ReportedAt    *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=reported_at,json=reportedAt,proto3" json:"reported_at,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -247,6 +248,13 @@ func (x *Crime) GetId() string {
 func (x *Crime) GetReporterId() string {
 	if x != nil {
 		return x.ReporterId
+	}
+	return ""
+}
+
+func (x *Crime) GetPatrolId() string {
+	if x != nil && x.PatrolId != nil {
+		return *x.PatrolId
 	}
 	return ""
 }
@@ -357,9 +365,10 @@ type UpdateCrimeReportRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	ReporterId    string                 `protobuf:"bytes,2,opt,name=reporter_id,json=reporterId,proto3" json:"reporter_id,omitempty"`
-	Description   *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	Status        *CrimeStatus           `protobuf:"varint,4,opt,name=status,proto3,enum=crimebroker.CrimeStatus,oneof" json:"status,omitempty"`
-	Location      *Location              `protobuf:"bytes,5,opt,name=location,proto3,oneof" json:"location,omitempty"`
+	PatrolId      *string                `protobuf:"bytes,3,opt,name=patrol_id,json=patrolId,proto3,oneof" json:"patrol_id,omitempty"`
+	Description   *string                `protobuf:"bytes,4,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	Status        *CrimeStatus           `protobuf:"varint,5,opt,name=status,proto3,enum=crimebroker.CrimeStatus,oneof" json:"status,omitempty"`
+	Location      *Location              `protobuf:"bytes,6,opt,name=location,proto3,oneof" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -404,6 +413,13 @@ func (x *UpdateCrimeReportRequest) GetId() string {
 func (x *UpdateCrimeReportRequest) GetReporterId() string {
 	if x != nil {
 		return x.ReporterId
+	}
+	return ""
+}
+
+func (x *UpdateCrimeReportRequest) GetPatrolId() string {
+	if x != nil && x.PatrolId != nil {
+		return *x.PatrolId
 	}
 	return ""
 }
@@ -477,12 +493,13 @@ type GetCrimesRequest struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	Id             *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
 	ReporterId     *string                `protobuf:"bytes,2,opt,name=reporter_id,json=reporterId,proto3,oneof" json:"reporter_id,omitempty"`
-	Street         *string                `protobuf:"bytes,3,opt,name=street,proto3,oneof" json:"street,omitempty"`
-	City           *string                `protobuf:"bytes,4,opt,name=city,proto3,oneof" json:"city,omitempty"`
-	State          *string                `protobuf:"bytes,5,opt,name=state,proto3,oneof" json:"state,omitempty"`
-	Date           *string                `protobuf:"bytes,6,opt,name=date,proto3,oneof" json:"date,omitempty"`
-	Status         *CrimeStatus           `protobuf:"varint,7,opt,name=status,proto3,enum=crimebroker.CrimeStatus,oneof" json:"status,omitempty"`
-	FilterKeywords []string               `protobuf:"bytes,8,rep,name=filterKeywords,proto3" json:"filterKeywords,omitempty"`
+	PatrolId       *string                `protobuf:"bytes,3,opt,name=patrol_id,json=patrolId,proto3,oneof" json:"patrol_id,omitempty"`
+	Street         *string                `protobuf:"bytes,4,opt,name=street,proto3,oneof" json:"street,omitempty"`
+	City           *string                `protobuf:"bytes,5,opt,name=city,proto3,oneof" json:"city,omitempty"`
+	State          *string                `protobuf:"bytes,6,opt,name=state,proto3,oneof" json:"state,omitempty"`
+	Date           *string                `protobuf:"bytes,7,opt,name=date,proto3,oneof" json:"date,omitempty"`
+	Status         *CrimeStatus           `protobuf:"varint,8,opt,name=status,proto3,enum=crimebroker.CrimeStatus,oneof" json:"status,omitempty"`
+	FilterKeywords []string               `protobuf:"bytes,9,rep,name=filterKeywords,proto3" json:"filterKeywords,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -527,6 +544,13 @@ func (x *GetCrimesRequest) GetId() string {
 func (x *GetCrimesRequest) GetReporterId() string {
 	if x != nil && x.ReporterId != nil {
 		return *x.ReporterId
+	}
+	return ""
+}
+
+func (x *GetCrimesRequest) GetPatrolId() string {
+	if x != nil && x.PatrolId != nil {
+		return *x.PatrolId
 	}
 	return ""
 }
@@ -687,49 +711,58 @@ const file_crime_proto_rawDesc = "" +
 	"\x04city\x18\x02 \x01(\tR\x04city\x12\x14\n" +
 	"\x05state\x18\x03 \x01(\tR\x05state\x12\x1a\n" +
 	"\blatitude\x18\x04 \x01(\x01R\blatitude\x12\x1c\n" +
-	"\tlongitude\x18\x05 \x01(\x01R\tlongitude\"\xf2\x02\n" +
+	"\tlongitude\x18\x05 \x01(\x01R\tlongitude\"\xa2\x03\n" +
 	"\x05Crime\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1f\n" +
 	"\vreporter_id\x18\x02 \x01(\tR\n" +
 	"reporterId\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x120\n" +
-	"\x06status\x18\x04 \x01(\x0e2\x18.crimebroker.CrimeStatusR\x06status\x121\n" +
-	"\blocation\x18\x05 \x01(\v2\x15.crimebroker.LocationR\blocation\x12;\n" +
-	"\vreported_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"\tpatrol_id\x18\x03 \x01(\tH\x00R\bpatrolId\x88\x01\x01\x12 \n" +
+	"\vdescription\x18\x04 \x01(\tR\vdescription\x120\n" +
+	"\x06status\x18\x05 \x01(\x0e2\x18.crimebroker.CrimeStatusR\x06status\x121\n" +
+	"\blocation\x18\x06 \x01(\v2\x15.crimebroker.LocationR\blocation\x12;\n" +
+	"\vreported_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"reportedAt\x129\n" +
 	"\n" +
-	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x8a\x01\n" +
+	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\f\n" +
+	"\n" +
+	"_patrol_id\"\x8a\x01\n" +
 	"\x12CrimeReportRequest\x12\x1f\n" +
 	"\vreporter_id\x18\x01 \x01(\tR\n" +
 	"reporterId\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x121\n" +
-	"\blocation\x18\x03 \x01(\v2\x15.crimebroker.LocationR\blocation\"\x89\x02\n" +
+	"\blocation\x18\x03 \x01(\v2\x15.crimebroker.LocationR\blocation\"\xb9\x02\n" +
 	"\x18UpdateCrimeReportRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1f\n" +
 	"\vreporter_id\x18\x02 \x01(\tR\n" +
-	"reporterId\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tH\x00R\vdescription\x88\x01\x01\x125\n" +
-	"\x06status\x18\x04 \x01(\x0e2\x18.crimebroker.CrimeStatusH\x01R\x06status\x88\x01\x01\x126\n" +
-	"\blocation\x18\x05 \x01(\v2\x15.crimebroker.LocationH\x02R\blocation\x88\x01\x01B\x0e\n" +
+	"reporterId\x12 \n" +
+	"\tpatrol_id\x18\x03 \x01(\tH\x00R\bpatrolId\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\x04 \x01(\tH\x01R\vdescription\x88\x01\x01\x125\n" +
+	"\x06status\x18\x05 \x01(\x0e2\x18.crimebroker.CrimeStatusH\x02R\x06status\x88\x01\x01\x126\n" +
+	"\blocation\x18\x06 \x01(\v2\x15.crimebroker.LocationH\x03R\blocation\x88\x01\x01B\f\n" +
+	"\n" +
+	"_patrol_idB\x0e\n" +
 	"\f_descriptionB\t\n" +
 	"\a_statusB\v\n" +
 	"\t_location\"$\n" +
 	"\x12DeleteCrimeRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"\xdf\x02\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x8f\x03\n" +
 	"\x10GetCrimesRequest\x12\x13\n" +
 	"\x02id\x18\x01 \x01(\tH\x00R\x02id\x88\x01\x01\x12$\n" +
 	"\vreporter_id\x18\x02 \x01(\tH\x01R\n" +
-	"reporterId\x88\x01\x01\x12\x1b\n" +
-	"\x06street\x18\x03 \x01(\tH\x02R\x06street\x88\x01\x01\x12\x17\n" +
-	"\x04city\x18\x04 \x01(\tH\x03R\x04city\x88\x01\x01\x12\x19\n" +
-	"\x05state\x18\x05 \x01(\tH\x04R\x05state\x88\x01\x01\x12\x17\n" +
-	"\x04date\x18\x06 \x01(\tH\x05R\x04date\x88\x01\x01\x125\n" +
-	"\x06status\x18\a \x01(\x0e2\x18.crimebroker.CrimeStatusH\x06R\x06status\x88\x01\x01\x12&\n" +
-	"\x0efilterKeywords\x18\b \x03(\tR\x0efilterKeywordsB\x05\n" +
+	"reporterId\x88\x01\x01\x12 \n" +
+	"\tpatrol_id\x18\x03 \x01(\tH\x02R\bpatrolId\x88\x01\x01\x12\x1b\n" +
+	"\x06street\x18\x04 \x01(\tH\x03R\x06street\x88\x01\x01\x12\x17\n" +
+	"\x04city\x18\x05 \x01(\tH\x04R\x04city\x88\x01\x01\x12\x19\n" +
+	"\x05state\x18\x06 \x01(\tH\x05R\x05state\x88\x01\x01\x12\x17\n" +
+	"\x04date\x18\a \x01(\tH\x06R\x04date\x88\x01\x01\x125\n" +
+	"\x06status\x18\b \x01(\x0e2\x18.crimebroker.CrimeStatusH\aR\x06status\x88\x01\x01\x12&\n" +
+	"\x0efilterKeywords\x18\t \x03(\tR\x0efilterKeywordsB\x05\n" +
 	"\x03_idB\x0e\n" +
-	"\f_reporter_idB\t\n" +
+	"\f_reporter_idB\f\n" +
+	"\n" +
+	"_patrol_idB\t\n" +
 	"\a_streetB\a\n" +
 	"\x05_cityB\b\n" +
 	"\x06_stateB\a\n" +
@@ -754,7 +787,7 @@ const file_crime_proto_rawDesc = "" +
 	"\fGetAllCrimes\x12\x1d.crimebroker.GetCrimesRequest\x1a\x1e.crimebroker.GetCrimesResponse\x12S\n" +
 	"\x14SubmitNewCrimeReport\x12\x1f.crimebroker.CrimeReportRequest\x1a\x1a.crimebroker.CrimeResponse\x12P\n" +
 	"\vUpdateCrime\x12%.crimebroker.UpdateCrimeReportRequest\x1a\x1a.crimebroker.CrimeResponse\x12J\n" +
-	"\vDeleteCrime\x12\x1f.crimebroker.DeleteCrimeRequest\x1a\x1a.crimebroker.CrimeResponseB\x12Z\x10/crimepb;crimepbb\x06proto3"
+	"\vDeleteCrime\x12\x1f.crimebroker.DeleteCrimeRequest\x1a\x1a.crimebroker.CrimeResponseB\x13Z\x11./crimepb;crimepbb\x06proto3"
 
 var (
 	file_crime_proto_rawDescOnce sync.Once
@@ -814,6 +847,7 @@ func file_crime_proto_init() {
 	if File_crime_proto != nil {
 		return
 	}
+	file_crime_proto_msgTypes[1].OneofWrappers = []any{}
 	file_crime_proto_msgTypes[3].OneofWrappers = []any{}
 	file_crime_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}

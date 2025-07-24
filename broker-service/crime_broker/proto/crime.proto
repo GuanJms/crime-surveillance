@@ -4,7 +4,7 @@ import "google/protobuf/timestamp.proto";
 
 package crimebroker;
 
-option go_package = "/crimepb;crimepb";
+option go_package = "./crimepb;crimepb";
 
 enum CrimeStatus {
     NEW = 0;
@@ -28,12 +28,13 @@ message Location{
 message Crime{
     string id = 1;
     string reporter_id = 2;
-    string description = 3;
-    CrimeStatus status = 4;
-    Location location = 5;
-    google.protobuf.Timestamp reported_at = 6;
-    google.protobuf.Timestamp created_at = 7;
-    google.protobuf.Timestamp updated_at = 8;
+    optional string patrol_id = 3; 
+    string description = 4;
+    CrimeStatus status = 5;
+    Location location = 6;
+    google.protobuf.Timestamp reported_at = 7;
+    google.protobuf.Timestamp created_at = 8;
+    google.protobuf.Timestamp updated_at = 9;
 }
 
 message CrimeReportRequest{
@@ -45,9 +46,10 @@ message CrimeReportRequest{
 message UpdateCrimeReportRequest{
     string id = 1;
     string reporter_id = 2;
-    optional string description = 3;
-    optional CrimeStatus status = 4;
-    optional Location location = 5;
+    optional string patrol_id = 3; 
+    optional string description = 4;
+    optional CrimeStatus status = 5;
+    optional Location location = 6;
 }
 
 message DeleteCrimeRequest{
@@ -57,12 +59,13 @@ message DeleteCrimeRequest{
 message GetCrimesRequest{
     optional string id = 1;
     optional string reporter_id = 2;
-    optional string street = 3;
-    optional string city = 4;
-    optional string state = 5;
-    optional string date = 6;
-    optional CrimeStatus status = 7;
-    repeated string filterKeywords = 8;
+    optional string patrol_id = 3; 
+    optional string street = 4;
+    optional string city = 5;
+    optional string state = 6;
+    optional string date = 7;
+    optional CrimeStatus status = 8;
+    repeated string filterKeywords = 9;
 }
 
 message GetCrimesResponse{
