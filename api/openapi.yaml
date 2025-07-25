@@ -73,7 +73,7 @@ paths:
         '404':
           description: Crime not found
     patch:
-      summary: Partially update crime status or assigned patrol
+      summary: Partially update crime status or assigned patrol; In patrol_id as "" will remove the assigned patrol; In location, existing fields will not be removed with "". 
       security:
         - BearerAuth: []
       parameters:

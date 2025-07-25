@@ -5,4 +5,5 @@ type Repository interface {
 	InsertNewCrime(*Crime) error
 	PutCrime(*Crime) error         // Update the whole exisitng crime
 	PatchCrime(*CrimeUpdate) error // Partial udpate
+	DeleteCrime(id string) error   // delete by the crime id
 }

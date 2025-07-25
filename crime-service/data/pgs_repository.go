@@ -166,22 +166,47 @@ func (repo *PostgresRepository) PatchCrime(update *CrimeUpdate) error {
 	defer cancel()
 
 	query, args := buildingCrimeUpdateQuery(update)
-	log.Println("Running ", query)
+	// log.Println("Running ", query)
 
-	resp, err := repo.Conn.ExecContext(ctx, query, args...)
+	res, err := repo.Conn.ExecContext(ctx, query, args...)
 	if err != nil {
 		return err
 	}
 
-	if row, err := resp.RowsAffected(); row == 0 || err != nil {
-		if err != nil {
-			log.Printf("Updateing existing crime %s error: %v", update.ID, err)
-			return err
-		} else {
-			return ErrNoConent
-		}
+	rowAffected, err := res.RowsAffected()
+	if err != nil {
+		log.Printf("Deleting existing crime %s error: %v", update.ID, err)
+		return err
 	}
 
+	if rowAffected == 0 {
+		return ErrNoConent
+	}
+
+	return nil
+}
+
+// TODO: Add Delete Crime
+func (repo *PostgresRepository) DeleteCrime(id string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `DELETE FROM crime WHERE id = $1`
+	res, err := repo.Conn.ExecContext(ctx, query, id)
+	if err != nil {
+		log.Printf("Deleting existing crime %s error: %v", id, err)
+		return err
+	}
+
+	rowAffected, err := res.RowsAffected()
+	if err != nil {
+		log.Printf("Failed to get affected row number for crime %s error: %v", id, err)
+		return err
+	}
+
+	if rowAffected == 0 {
+		return ErrNoConent
+	}
 	return nil
 }
 
@@ -224,31 +249,31 @@ func buildingCrimeUpdateQuery(update *CrimeUpdate) (string, []any) {
 
 	if update.LocationUpdate != nil {
 
-		if update.LocationUpdate.Street != nil {
+		if update.LocationUpdate.Street != nil && *update.LocationUpdate.Street != "" {
 			setParts = append(setParts, fmt.Sprintf("street = $%d", argPos))
 			args = append(args, *update.LocationUpdate.Street)
 			argPos++
 		}
 
-		if update.LocationUpdate.City != nil {
+		if update.LocationUpdate.City != nil && *update.LocationUpdate.City != "" {
 			setParts = append(setParts, fmt.Sprintf("city = $%d", argPos))
 			args = append(args, *update.LocationUpdate.City)
 			argPos++
 		}
 
-		if update.LocationUpdate.State != nil {
+		if update.LocationUpdate.State != nil && *update.LocationUpdate.State != "" {
 			setParts = append(setParts, fmt.Sprintf("state = $%d", argPos))
 			args = append(args, *update.LocationUpdate.State)
 			argPos++
 		}
 
-		if update.LocationUpdate.Latitude != nil {
+		if update.LocationUpdate.Latitude != nil && *update.LocationUpdate.Latitude != 0 {
 			setParts = append(setParts, fmt.Sprintf("latitude = $%d", argPos))
 			args = append(args, *update.LocationUpdate.Latitude)
 			argPos++
 		}
 
-		if update.LocationUpdate.Longitude != nil {
+		if update.LocationUpdate.Longitude != nil && *update.LocationUpdate.Longitude != 0 {
 			setParts = append(setParts, fmt.Sprintf("longitude = $%d", argPos))
 			args = append(args, *update.LocationUpdate.Longitude)
 			argPos++

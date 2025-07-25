@@ -63,7 +63,7 @@ func (s *CrimeServer) PutCrime(ctx context.Context, req *crimepb.UpdateCrimeRepo
 	resp := &crimepb.CrimeResponse{
 		Id:         crime.ID,
 		Successful: true,
-		Message:    "Successfully put and overwrite the whole crime record",
+		Message:    "Successfully put executed",
 	}
 	return resp, nil
 
@@ -80,10 +80,21 @@ func (s *CrimeServer) PatchCrime(ctx context.Context, req *crimepb.UpdateCrimeRe
 	resp := &crimepb.CrimeResponse{
 		Id:         update.ID,
 		Successful: true,
-		Message:    "Successfully put and overwrite the whole crime record",
+		Message:    "Successfully patch update executed",
 	}
 	return resp, nil
 }
 func (s *CrimeServer) DeleteCrime(ctx context.Context, req *crimepb.DeleteCrimeRequest) (*crimepb.CrimeResponse, error) {
-	panic("Not implemented")
+	crimeID := req.Id
+	err := s.CrimeModels.Repo.DeleteCrime(crimeID)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := &crimepb.CrimeResponse{
+		Id:         crimeID,
+		Successful: true,
+		Message:    "Successfully deleted crime record",
+	}
+	return resp, nil
 }
