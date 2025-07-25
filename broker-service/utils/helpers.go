@@ -71,3 +71,18 @@ func ErrorJSON(w http.ResponseWriter, err error, status ...int) error {
 
 	return WriteJSON(w, statusCode, payload)
 }
+
+func nilIfEmpty(s string) any {
+	if s == "" {
+		return nil
+	}
+	return s
+}
+
+func DeferOrZero[T any](p *T) T {
+	if p != nil {
+		return *p
+	}
+	var zero T
+	return zero
+}

@@ -5,6 +5,7 @@ import (
 	"crimeServiceApp/data"
 	"crimeServiceApp/mapper"
 	"crimeServiceApp/proto/crimepb"
+	"log"
 )
 
 type CrimeServer struct {
@@ -50,8 +51,38 @@ func (s *CrimeServer) SubmitNewCrimeReport(ctx context.Context, req *crimepb.Cri
 	}
 	return resp, nil
 }
-func (s *CrimeServer) UpdateCrime(ctx context.Context, req *crimepb.UpdateCrimeReportRequest) (*crimepb.CrimeResponse, error) {
-	panic("Not implemented")
+func (s *CrimeServer) PutCrime(ctx context.Context, req *crimepb.UpdateCrimeReportRequest) (*crimepb.CrimeResponse, error) {
+	crime, err := data.NewCrimeFromProtoUpdateRequest(req)
+	if err != nil {
+		return nil, err
+	}
+	err = s.CrimeModels.Repo.PutCrime(crime)
+	if err != nil {
+		return nil, err
+	}
+	resp := &crimepb.CrimeResponse{
+		Id:         crime.ID,
+		Successful: true,
+		Message:    "Successfully put and overwrite the whole crime record",
+	}
+	return resp, nil
+
+}
+func (s *CrimeServer) PatchCrime(ctx context.Context, req *crimepb.UpdateCrimeReportRequest) (*crimepb.CrimeResponse, error) {
+	update := data.NewCrimeUpdateFromProtoUpdateRequest(req)
+
+	log.Printf("updating patch crime with update %v", update)
+
+	err := s.CrimeModels.Repo.PatchCrime(update)
+	if err != nil {
+		return nil, err
+	}
+	resp := &crimepb.CrimeResponse{
+		Id:         update.ID,
+		Successful: true,
+		Message:    "Successfully put and overwrite the whole crime record",
+	}
+	return resp, nil
 }
 func (s *CrimeServer) DeleteCrime(ctx context.Context, req *crimepb.DeleteCrimeRequest) (*crimepb.CrimeResponse, error) {
 	panic("Not implemented")

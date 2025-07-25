@@ -46,6 +46,7 @@ package "PostgreSQL" {
     table(crime){
         id : UUID [PK]
         reporter_id : UUID [FK]
+        patrol_id : UUID [FK]
         description : string
         street : string
         city : string

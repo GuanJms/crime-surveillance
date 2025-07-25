@@ -782,11 +782,13 @@ const file_crime_proto_rawDesc = "" +
 	"\bRESOLVED\x10\x02*'\n" +
 	"\fPatrolStatus\x12\r\n" +
 	"\tAVAILABLE\x10\x00\x12\b\n" +
-	"\x04BUSY\x10\x012\xd0\x02\n" +
+	"\x04BUSY\x10\x012\x9e\x03\n" +
 	"\fCrimeService\x12M\n" +
 	"\fGetAllCrimes\x12\x1d.crimebroker.GetCrimesRequest\x1a\x1e.crimebroker.GetCrimesResponse\x12S\n" +
-	"\x14SubmitNewCrimeReport\x12\x1f.crimebroker.CrimeReportRequest\x1a\x1a.crimebroker.CrimeResponse\x12P\n" +
-	"\vUpdateCrime\x12%.crimebroker.UpdateCrimeReportRequest\x1a\x1a.crimebroker.CrimeResponse\x12J\n" +
+	"\x14SubmitNewCrimeReport\x12\x1f.crimebroker.CrimeReportRequest\x1a\x1a.crimebroker.CrimeResponse\x12M\n" +
+	"\bPutCrime\x12%.crimebroker.UpdateCrimeReportRequest\x1a\x1a.crimebroker.CrimeResponse\x12O\n" +
+	"\n" +
+	"PatchCrime\x12%.crimebroker.UpdateCrimeReportRequest\x1a\x1a.crimebroker.CrimeResponse\x12J\n" +
 	"\vDeleteCrime\x12\x1f.crimebroker.DeleteCrimeRequest\x1a\x1a.crimebroker.CrimeResponseB\x13Z\x11./crimepb;crimepbb\x06proto3"
 
 var (
@@ -829,14 +831,16 @@ var file_crime_proto_depIdxs = []int32{
 	3,  // 9: crimebroker.GetCrimesResponse.crimes:type_name -> crimebroker.Crime
 	7,  // 10: crimebroker.CrimeService.GetAllCrimes:input_type -> crimebroker.GetCrimesRequest
 	4,  // 11: crimebroker.CrimeService.SubmitNewCrimeReport:input_type -> crimebroker.CrimeReportRequest
-	5,  // 12: crimebroker.CrimeService.UpdateCrime:input_type -> crimebroker.UpdateCrimeReportRequest
-	6,  // 13: crimebroker.CrimeService.DeleteCrime:input_type -> crimebroker.DeleteCrimeRequest
-	8,  // 14: crimebroker.CrimeService.GetAllCrimes:output_type -> crimebroker.GetCrimesResponse
-	9,  // 15: crimebroker.CrimeService.SubmitNewCrimeReport:output_type -> crimebroker.CrimeResponse
-	9,  // 16: crimebroker.CrimeService.UpdateCrime:output_type -> crimebroker.CrimeResponse
-	9,  // 17: crimebroker.CrimeService.DeleteCrime:output_type -> crimebroker.CrimeResponse
-	14, // [14:18] is the sub-list for method output_type
-	10, // [10:14] is the sub-list for method input_type
+	5,  // 12: crimebroker.CrimeService.PutCrime:input_type -> crimebroker.UpdateCrimeReportRequest
+	5,  // 13: crimebroker.CrimeService.PatchCrime:input_type -> crimebroker.UpdateCrimeReportRequest
+	6,  // 14: crimebroker.CrimeService.DeleteCrime:input_type -> crimebroker.DeleteCrimeRequest
+	8,  // 15: crimebroker.CrimeService.GetAllCrimes:output_type -> crimebroker.GetCrimesResponse
+	9,  // 16: crimebroker.CrimeService.SubmitNewCrimeReport:output_type -> crimebroker.CrimeResponse
+	9,  // 17: crimebroker.CrimeService.PutCrime:output_type -> crimebroker.CrimeResponse
+	9,  // 18: crimebroker.CrimeService.PatchCrime:output_type -> crimebroker.CrimeResponse
+	9,  // 19: crimebroker.CrimeService.DeleteCrime:output_type -> crimebroker.CrimeResponse
+	15, // [15:20] is the sub-list for method output_type
+	10, // [10:15] is the sub-list for method input_type
 	10, // [10:10] is the sub-list for extension type_name
 	10, // [10:10] is the sub-list for extension extendee
 	0,  // [0:10] is the sub-list for field type_name

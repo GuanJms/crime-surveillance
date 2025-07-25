@@ -82,7 +82,8 @@ service CrimeService{
     // function the system has 
     rpc GetAllCrimes(GetCrimesRequest) returns (GetCrimesResponse);
     rpc SubmitNewCrimeReport(CrimeReportRequest) returns (CrimeResponse);
-    rpc UpdateCrime(UpdateCrimeReportRequest) returns (CrimeResponse);
+    rpc PutCrime(UpdateCrimeReportRequest) returns (CrimeResponse);
+    rpc PatchCrime(UpdateCrimeReportRequest) returns (CrimeResponse);
     rpc DeleteCrime(DeleteCrimeRequest) returns (CrimeResponse);
 }
 

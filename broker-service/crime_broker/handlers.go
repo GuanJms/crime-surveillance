@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"time"
 
@@ -66,7 +67,7 @@ func (cb *CrimeBrokerHandler) SubmitNewCrime(w http.ResponseWriter, r *http.Requ
 	// req.ReporterId = uuid.New().String()
 
 	// TODO: delete dev reporter_id
-	req.ReporterId = "1366e965-9856-46f9-ab88-72b4e6e19d6f"
+	req.ReporterId = "c2473b3c-ab82-4ed4-a814-1f5dc29e730f"
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
@@ -93,8 +94,73 @@ func (cb *CrimeBrokerHandler) SubmitNewCrime(w http.ResponseWriter, r *http.Requ
 }
 
 // TODO: implement update crime
-func (cb *CrimeBrokerHandler) UpdateCrime(w http.ResponseWriter, r *http.Request) {
-	panic("not implemented")
+func (cb *CrimeBrokerHandler) PutCrime(w http.ResponseWriter, r *http.Request) {
+	crimeID := chi.URLParam(r, "id")
+	//reporterId should not use authorization token since - only admin/officer will update it
+
+	var reqDTO UpdateCrimeReportRequestDTO
+	if err := json.NewDecoder(r.Body).Decode(&reqDTO); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	req, err := reqDTO.toProto()
+	if err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+	req.Id = crimeID
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	resp, err := cb.GrpcClient.PutCrime(ctx, req)
+	if err != nil {
+		utils.ErrorJSON(w, err, http.StatusInternalServerError)
+		return
+	}
+	// crime response in resp including id, successful, message
+	if !resp.Successful {
+		utils.ErrorJSON(w, errors.New(resp.Message), http.StatusBadRequest)
+		return
+	}
+	// successful response
+	utils.WriteJSON(w, http.StatusOK, resp)
+}
+
+func (cb *CrimeBrokerHandler) PatchCrime(w http.ResponseWriter, r *http.Request) {
+	crimeID := chi.URLParam(r, "id")
+	//reporterId should not use authorization token since - only admin/officer will update it
+
+	var reqDTO UpdateCrimeReportRequestDTO
+	if err := json.NewDecoder(r.Body).Decode(&reqDTO); err != nil {
+		http.Error(w, "Invalid JSON during decoding request", http.StatusBadRequest)
+		return
+	}
+	log.Printf("Received update crime report request DTO - %v", reqDTO)
+
+	req, err := reqDTO.toProto()
+	if err != nil {
+		http.Error(w, "error creating reqDTO to Proto class", http.StatusBadRequest)
+		return
+	}
+	req.Id = crimeID
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	resp, err := cb.GrpcClient.PatchCrime(ctx, req)
+	if err != nil {
+		utils.ErrorJSON(w, err, http.StatusInternalServerError)
+		return
+	}
+	// crime response in resp including id, successful, message
+	if !resp.Successful {
+		utils.ErrorJSON(w, errors.New(resp.Message), http.StatusBadRequest)
+		return
+	}
+	// successful response
+	utils.WriteJSON(w, http.StatusOK, resp)
 }
 
 // TODO: implement delete crime
@@ -105,6 +171,7 @@ func (cb *CrimeBrokerHandler) DeleteCrime(w http.ResponseWriter, r *http.Request
 func (cb *CrimeBrokerHandler) AddTo(mux *chi.Mux) {
 	mux.Get("/crimes", cb.ListAllCrimes)
 	mux.Post("/crimes", cb.SubmitNewCrime)
-	mux.Put("/crimes/{id}", cb.UpdateCrime)
+	mux.Put("/crimes/{id}", cb.PutCrime)
+	mux.Patch("/crimes/{id}", cb.PatchCrime)
 	mux.Delete("/crimes/{id}", cb.DeleteCrime)
 }

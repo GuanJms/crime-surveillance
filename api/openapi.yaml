@@ -40,7 +40,7 @@ paths:
   
   /crimes/{id}:
     put:
-      summary: Update a crime status or assign
+      summary: Update and overwrite the existing crime status
       security:
         - BearerAuth: []
       parameters:
@@ -48,13 +48,57 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateCrime'
+              type: object
+              properties:
+                reporter_id:
+                  type: string
+                patrol_id:
+                  type: string
+                description:
+                  type: string
+                status:
+                  $ref: '#/components/schemas/CrimeStatus'
+                location:
+                  $ref: '#/components/schemas/Location'
+              required: [reporter_id, description, status, location]
+      responses:
+        '200':
+          description: Crime updated
+        '404':
+          description: Crime not found
+    patch:
+      summary: Partially update crime status or assigned patrol
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reporter_id:
+                  type: string
+                patrol_id:
+                  type: string
+                description:
+                  type: string
+                status:
+                  $ref: '#/components/schemas/CrimeStatus'
+                location:
+                  $ref: '#/components/schemas/Location'
       responses:
         '200':
           description: Crime updated
@@ -69,7 +113,7 @@ paths:
           name: id
           required: true
           schema: 
-            type: integer
+            type: string
       responses:
         '204':
           description: Crime deleted successfully
@@ -117,7 +161,7 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: Successfully return patrol info
@@ -137,7 +181,7 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         required: true
         content:
@@ -217,8 +261,7 @@ components:
         description:
           type: string
         status:
-          type: string
-          enum: [new, assigned, resolved]
+          $ref: '#/components/schemas/CrimeStatus'
         suspectDescription:
           type: string
       required: [id, time, location, description, status]
@@ -294,6 +337,10 @@ components:
         location:
           $ref: '#/components/schemas/Location'
       required: [status, location]
+
+    CrimeStatus:
+      type: string
+      enum: [NEW, ASSIGNED, RESOLVED]
 
     
     DispatchResult:

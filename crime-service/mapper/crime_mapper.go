@@ -9,7 +9,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func fromPostgresStatus(s string) (crimepb.CrimeStatus, error) {
+func fromPostgresStatusToGRPCCrimeStatus(s string) (crimepb.CrimeStatus, error) {
 	switch strings.ToUpper(s) {
 	case "NEW":
 		return crimepb.CrimeStatus_NEW, nil
@@ -24,7 +24,7 @@ func fromPostgresStatus(s string) (crimepb.CrimeStatus, error) {
 
 func ToProtoCrime(c *data.Crime) (*crimepb.Crime, error) {
 	// converting crime to proto crime
-	status, err := fromPostgresStatus(c.Status)
+	status, err := fromPostgresStatusToGRPCCrimeStatus(c.Status)
 	if err != nil {
 		return nil, err
 	}
