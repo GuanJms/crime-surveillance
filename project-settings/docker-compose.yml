@@ -36,6 +36,8 @@ services:
     restart: always
     ports:
       - "8080:8080"
+    environment:
+      SECRET: "this is a very secret key - james" 
     deploy:
       mode: replicated
       replicas: 1
