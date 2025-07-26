@@ -72,8 +72,8 @@ See full OpenAPI spec: [openapi.yaml](./api/openapi.yaml)
 ### Authentication Endpoints
 | Method | Path               | Description                          | Auth Required |
 |--------|--------------------|--------------------------------------|---------------|
-| POST   | `/admin/login`     | Admin sign in for system access     | No            |
-
+| PATCH   | `/admin/users/{id}/role` | Admin sign in for system access| Yes           |
+| POST    | `/users`                 | Register new user (as CITIZEN) | No           |
 ---
 
 ## Data Models

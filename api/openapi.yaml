@@ -206,9 +206,9 @@ paths:
             schema:
               type: object
               properties:
-                crimeId:
+                crime_id:
                   type: integer
-              required: [crimeId]
+              required: [crime_id]
       responses:
         '200':
           description: Patrol assigned
@@ -216,20 +216,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DispatchResult'
-
   
-  /admin/login:
+  /users:
     post:
-      summary: Admin sign in for observe system
+      summary: Register a new user
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: '#/components/schemas/NewUser'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+        '400':
+          description: Bad request of JSON
+        '409':
+          description: User already exists
+  
+  /admin/users/{id}/role:
+    patch:
+      summary: Admin changes the existing user role
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                user_id:
+                  type: string
+                role:
+                  $ref : '#/components/schemas/Role'
+              required: [user_id, role]
+                
       responses:
         '200':
-          description: Successfully authenticated
+          description: Successfully changed the role
           content:
             application/json:
               schema:
@@ -243,6 +277,51 @@ paths:
                 properties:
                   error:
                    type: string
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  
+  # /admin/login:
+  #   post:
+  #     summary: Admin sign in for observe system
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: '#/components/schemas/LoginRequest'
+  #     responses:
+  #       '200':
+  #         description: Successfully authenticated
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/AuthToken'
+  #       '401':
+  #         description: Unauthorized - invalid or missing credentials
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 error:
+  #                  type: string
 
                 
 
@@ -297,10 +376,15 @@ components:
       properties:
         status:
           type: string
-          enum: [new, assigned, resolved]
+          enum: [NEW, ASSIGNED, RESOLVED]
         assignedPatrolId:
           type: integer
       required: [status]
+
+    Role:
+      type: string
+      enum: [CITIZEN, PATROL, DISPATCHER, ADMIN]
+
 
     Patrol:
       type: object
@@ -367,6 +451,16 @@ components:
         token:
           type: string
       required: [token]
+    
+    NewUser:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required: [username, password]
+
 
   securitySchemes:
     BearerAuth:

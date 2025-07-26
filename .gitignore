@@ -2,9 +2,10 @@
 .idea/
 
 .env
-.env.*
 .env.local
 .env.*.local
+# Keep .env.example in version control
+!.env.example
 
 # Ignor .VSCodeCounter
 .VSCodeCounter

@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package authbroker;
+
+option go_package = "./authpb;authpb";
+
+enum UserRole {
+    CITIZEN = 0;
+    PATROL = 1;
+    DISPATCHER = 2;
+    ADMIN = 3;
+}
+
+message User{
+    string id = 1;
+    string username = 2;
+    string password_hash = 3;
+    google.protobuf.Timestamp created_at = 4;
+    google.protobuf.Timestamp updated_at = 5;
+    google.protobuf.Timestamp last_login = 6;
+    google.protobuf.Timestamp last_activity = 7;
+}
+
+message AuthToken {
+    string token = 1;
+}
+
+message CreateNewUserResponse{
+    bool success = 1;
+    string message = 2;
+    optional string token = 3;
+}
+
+message NewUserRequest{
+    string username = 1;
+    string password = 2;
+}
+
+message ChangeUserRoleRequest{
+    string user_id = 1;
+    UserRole role = 2;
+}
+
+message ChangeUserRoleResponse{
+    bool success = 1;
+    string message = 2;
+}
+
+message UserLoginCredentials{
+    string username = 1;
+    string password = 2;
+}
+
+message UserLoginResposne{
+    string token = 1;
+    bool success = 2;
+    string message = 3;
+}
+
+service AuthService{
+    rpc CreateNewUser(NewUserRequest) returns (AuthToken);
+    rpc ChangeUserRole(ChangeUserRoleRequest) returns (ChangeUserRoleResponse);
+    rpc UserLogin(UserLoginCredentials) returns (UserLoginResposne);
+}

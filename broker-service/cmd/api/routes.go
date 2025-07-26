@@ -1,7 +1,7 @@
 package main
 
 import (
-	crimebroker "brokerServiceApp/crime_broker"
+	crimebroker "brokerServiceApp/internal/crime_broker"
 	"log"
 	"net/http"
 

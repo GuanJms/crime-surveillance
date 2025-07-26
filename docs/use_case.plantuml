@@ -22,8 +22,8 @@ usecase "Update crime status" as UC_UpdateCrime
 usecase "View patrol status" as UC_ViewPatrol
 usecase "View logs" as UC_ViewLogs
 usecase "Create citizen" as UC_CreateCitizen
-usecase "Upgrade citizen to Dispatcher" as UC_UpgradeDispatcher
-usecase "Upgrade citizen to Patrol" as UC_UpgradePatrol
+usecase "Change roles" as UC_ChangeRoles
+
 
 Citizen -- UC_ReportCrime
 Citizen -- UC_ViewCrime
@@ -36,6 +36,5 @@ Dispatcher -- UC_AssignPatrol
 
 Admin -- UC_ViewLogs
 Admin -- UC_CreateCitizen
-Admin -- UC_UpgradeDispatcher
-Admin -- UC_UpgradePatrol
+Admin -- UC_ChangeRoles
 @enduml

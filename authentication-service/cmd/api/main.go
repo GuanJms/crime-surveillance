@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	gRpcPort = "50001"
+	gRpcPort = "50000"
 )
 
 type Config struct {
