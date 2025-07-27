@@ -429,8 +429,10 @@ components:
     Patrol:
       type: object
       properties:
-        id:
+        userId:
           type: integer
+        officerId:
+          type: string
         officerName:
           type: string
         status:
@@ -438,19 +440,21 @@ components:
           enum: [available, busy]
         location:
           $ref: '#/components/schemas/Location'
-      required: [id, officerName, status, location]
+      required: [userId, officerId, officerName]
 
     NewPatrol:
       type: object
       properties:
-        officerName: 
+        userId:
+          type: integer
+        officerId:
+          type: string
+        officerName:
           type: string
         status:
           type: string
           enum: [available, busy]
-        location:
-          $ref: '#/components/schemas/Location'
-      required: [officerName, status, location]
+      required: [userId, officerId, officerName]
 
     NewStatus:
       type: object
