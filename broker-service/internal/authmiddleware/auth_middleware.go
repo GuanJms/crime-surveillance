@@ -3,7 +3,9 @@ package authmiddleware
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -32,9 +34,15 @@ func JWTMiddleware(secret []byte) func(http.Handler) http.Handler {
 				return
 			}
 
+			// strip "Bearer " prefix if present
+			tokenStr = strings.TrimPrefix(tokenStr, "Bearer ")
+
+			log.Printf("JWTMiddleware - receive token: %s", tokenStr)
+
 			// parse token with claim
 			token, err := jwt.ParseWithClaims(tokenStr, &CustomClaims{}, func(t *jwt.Token) (any, error) {
 				if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+					log.Printf("JWTMiddleware - unexpected signing method: %v", t.Header["alg"])
 					return nil, fmt.Errorf("unexpected sighning method")
 				}
 				return secret, nil
@@ -42,11 +50,20 @@ func JWTMiddleware(secret []byte) func(http.Handler) http.Handler {
 
 			// check validity
 			if err != nil || !token.Valid {
+				log.Printf("JWTMiddleware - error parsing token: %v", err)
 				http.Error(w, "invalid token", http.StatusUnauthorized)
+				return
 			}
 
 			// access claims
-			claims := token.Claims.(*CustomClaims)
+			claims, ok := token.Claims.(*CustomClaims)
+			if !ok {
+				log.Printf("JWTMiddleware - invalid token claims")
+				http.Error(w, "invalid token claims", http.StatusUnauthorized)
+				return
+			}
+
+			log.Printf("JWTMiddleware - claims: %v", claims)
 
 			// run next function
 			ctx := context.WithValue(r.Context(), ctxKeyClaims{}, claims)

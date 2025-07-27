@@ -9,23 +9,12 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
-
-var secret []byte
-
-func initializeSecret() {
-	secretStr := os.Getenv("SECRET")
-	if secretStr == "" {
-		log.Fatal("SECRET environment variable is required")
-	}
-	secret = []byte(secretStr)
-}
 
 type CrimeBrokerHandler struct {
 	GrpcClient crimepb.CrimeServiceClient
@@ -34,7 +23,6 @@ type CrimeBrokerHandler struct {
 
 // TODO: Add graceful shutdown managemetn of conn
 func NewCrimeBrokerHandler() (*CrimeBrokerHandler, error) {
-	initializeSecret()
 	conn, err := grpc.NewClient("crime-service:50001", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, err
@@ -47,8 +35,8 @@ func NewCrimeBrokerHandler() (*CrimeBrokerHandler, error) {
 }
 
 // TODO: implement list all crimes handlers
-func (cb *CrimeBrokerHandler) ListAllCrimes(w http.ResponseWriter, r *http.Request) {
-	if cb.GrpcConn == nil {
+func (h *CrimeBrokerHandler) ListAllCrimes(w http.ResponseWriter, r *http.Request) {
+	if h.GrpcConn == nil {
 		utils.ErrorJSON(w, errors.New("crime broker handler has no grpc connection"), http.StatusInternalServerError)
 		return
 	}
@@ -57,7 +45,7 @@ func (cb *CrimeBrokerHandler) ListAllCrimes(w http.ResponseWriter, r *http.Reque
 
 	getCrimeRequest := crimepb.GetCrimesRequest{}
 
-	resp, err := cb.GrpcClient.GetAllCrimes(ctx, &getCrimeRequest)
+	resp, err := h.GrpcClient.GetAllCrimes(ctx, &getCrimeRequest)
 	if err != nil {
 		utils.ErrorJSON(w, err, http.StatusInternalServerError)
 		return
@@ -68,8 +56,8 @@ func (cb *CrimeBrokerHandler) ListAllCrimes(w http.ResponseWriter, r *http.Reque
 }
 
 // TODO: implement submit new crime
-func (cb *CrimeBrokerHandler) SubmitNewCrime(w http.ResponseWriter, r *http.Request) {
-	if cb.GrpcConn == nil {
+func (h *CrimeBrokerHandler) SubmitNewCrime(w http.ResponseWriter, r *http.Request) {
+	if h.GrpcConn == nil {
 		utils.ErrorJSON(w, errors.New("crime broker handler has no grpc connection"), http.StatusInternalServerError)
 		return
 	}
@@ -91,7 +79,7 @@ func (cb *CrimeBrokerHandler) SubmitNewCrime(w http.ResponseWriter, r *http.Requ
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	resp, err := cb.GrpcClient.SubmitNewCrimeReport(ctx, &req)
+	resp, err := h.GrpcClient.SubmitNewCrimeReport(ctx, &req)
 	if err != nil {
 		utils.ErrorJSON(w, err, http.StatusInternalServerError)
 		return
@@ -108,7 +96,7 @@ func (cb *CrimeBrokerHandler) SubmitNewCrime(w http.ResponseWriter, r *http.Requ
 }
 
 // TODO: implement update crime
-func (cb *CrimeBrokerHandler) PutCrime(w http.ResponseWriter, r *http.Request) {
+func (h *CrimeBrokerHandler) PutCrime(w http.ResponseWriter, r *http.Request) {
 	crimeID := chi.URLParam(r, "id")
 	//reporterId should not use authorization token since - only admin/officer will update it
 
@@ -120,7 +108,7 @@ func (cb *CrimeBrokerHandler) PutCrime(w http.ResponseWriter, r *http.Request) {
 
 	req, err := reqDTO.toProto()
 	if err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		http.Error(w, "Invalid JSON proto", http.StatusBadRequest)
 		return
 	}
 	req.Id = crimeID
@@ -128,7 +116,7 @@ func (cb *CrimeBrokerHandler) PutCrime(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	resp, err := cb.GrpcClient.PutCrime(ctx, req)
+	resp, err := h.GrpcClient.PutCrime(ctx, req)
 	if err != nil {
 		utils.ErrorJSON(w, err, http.StatusInternalServerError)
 		return
@@ -142,7 +130,7 @@ func (cb *CrimeBrokerHandler) PutCrime(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, resp)
 }
 
-func (cb *CrimeBrokerHandler) PatchCrime(w http.ResponseWriter, r *http.Request) {
+func (h *CrimeBrokerHandler) PatchCrime(w http.ResponseWriter, r *http.Request) {
 	crimeId := chi.URLParam(r, "id")
 	//reporterId should not use authorization token since - only admin/officer will update it
 
@@ -163,7 +151,7 @@ func (cb *CrimeBrokerHandler) PatchCrime(w http.ResponseWriter, r *http.Request)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	resp, err := cb.GrpcClient.PatchCrime(ctx, req)
+	resp, err := h.GrpcClient.PatchCrime(ctx, req)
 	if err != nil {
 		utils.ErrorJSON(w, err, http.StatusInternalServerError)
 		return
@@ -177,7 +165,7 @@ func (cb *CrimeBrokerHandler) PatchCrime(w http.ResponseWriter, r *http.Request)
 	utils.WriteJSON(w, http.StatusOK, resp)
 }
 
-func (cb *CrimeBrokerHandler) DeleteCrime(w http.ResponseWriter, r *http.Request) {
+func (h *CrimeBrokerHandler) DeleteCrime(w http.ResponseWriter, r *http.Request) {
 	var deleteRequest crimepb.DeleteCrimeRequest
 
 	deleteRequest.Id = chi.URLParam(r, "id")
@@ -185,7 +173,7 @@ func (cb *CrimeBrokerHandler) DeleteCrime(w http.ResponseWriter, r *http.Request
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	resp, err := cb.GrpcClient.DeleteCrime(ctx, &deleteRequest)
+	resp, err := h.GrpcClient.DeleteCrime(ctx, &deleteRequest)
 	if err != nil {
 		utils.ErrorJSON(w, err, http.StatusInternalServerError)
 		return
@@ -199,15 +187,15 @@ func (cb *CrimeBrokerHandler) DeleteCrime(w http.ResponseWriter, r *http.Request
 	utils.WriteJSON(w, http.StatusOK, resp)
 }
 
-func (cb *CrimeBrokerHandler) AddTo(r chi.Router) {
+func (h *CrimeBrokerHandler) AddTo(r chi.Router) {
 	r.Route("/crimes", func(crime chi.Router) {
-		crime.Get("/", cb.ListAllCrimes)
+		crime.Get("/", h.ListAllCrimes)
 		crime.Group(func(protected chi.Router) {
-			protected.Use(authmiddleware.JWTMiddleware(secret))
-			protected.Post("/", cb.SubmitNewCrime)
-			protected.With(authmiddleware.RequireRole("PATROL", "DISPATCHER", "ADMIN")).Put("/{id}", cb.PutCrime)
-			protected.With(authmiddleware.RequireRole("PATROL", "DISPATCHER", "ADMIN")).Patch("/{id}", cb.PatchCrime)
-			protected.With(authmiddleware.RequireRole("ADMIN")).Delete("/{id}", cb.DeleteCrime)
+			protected.Use(authmiddleware.JWTMiddleware(utils.Secret))
+			protected.Post("/", h.SubmitNewCrime)
+			protected.With(authmiddleware.RequireRole("PATROL", "DISPATCHER", "ADMIN")).Put("/{id}", h.PutCrime)
+			protected.With(authmiddleware.RequireRole("PATROL", "DISPATCHER", "ADMIN")).Patch("/{id}", h.PatchCrime)
+			protected.With(authmiddleware.RequireRole("ADMIN")).Delete("/{id}", h.DeleteCrime)
 		})
 	})
 }

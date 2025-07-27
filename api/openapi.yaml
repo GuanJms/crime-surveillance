@@ -217,9 +217,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/DispatchResult'
   
-  /users:
+  /users/register:
     post:
       summary: Register a new user
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -229,6 +231,27 @@ paths:
       responses:
         '201':
           description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+        '400':
+          description: Bad request of JSON
+        '409':
+          description: User already exists
+
+  /users/login:
+    post:
+      summary: Existing user login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+      responses:
+        '200':
+          description: User successfully logged in
           content:
             application/json:
               schema:
@@ -255,11 +278,9 @@ paths:
           application/json:
             schema:
               properties:
-                user_id:
-                  type: string
                 role:
                   $ref : '#/components/schemas/Role'
-              required: [user_id, role]
+              required: [ role]
                 
       responses:
         '200':
@@ -267,7 +288,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthToken'
+                type: object
+                properties:
+                  token:
+                    type: string
         '401':
           description: Unauthorized - invalid or missing credentials
           content:
@@ -370,7 +394,23 @@ components:
         description:
           type: string
       required: [location, description]
-    
+
+    AuthToken:
+      type: object
+      properties:
+        token:
+          type: string
+      required: [token]
+
+    Credentials:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required: [username, password]
+      
     UpdateCrime:
       type: object
       properties:
@@ -444,13 +484,6 @@ components:
         password:
           type: string
       required: [username, password]
-
-    AuthToken:
-      type: object
-      properties:    
-        token:
-          type: string
-      required: [token]
     
     NewUser:
       type: object

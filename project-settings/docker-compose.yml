@@ -41,6 +41,7 @@ services:
       replicas: 1
     environment:
       DSN: ${DSN_TEMPLATE}
+      SECRET: ${SECRET}
 
   broker-service:
     build:
@@ -50,7 +51,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SECRET: "this is a very secret key - james" 
+      SECRET: ${SECRET}
     deploy:
       mode: replicated
       replicas: 1

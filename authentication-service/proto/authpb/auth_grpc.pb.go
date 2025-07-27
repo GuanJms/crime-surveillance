@@ -28,7 +28,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
-	CreateNewUser(ctx context.Context, in *NewUserRequest, opts ...grpc.CallOption) (*AuthToken, error)
+	CreateNewUser(ctx context.Context, in *NewUserRequest, opts ...grpc.CallOption) (*NewUserResponse, error)
 	ChangeUserRole(ctx context.Context, in *ChangeUserRoleRequest, opts ...grpc.CallOption) (*ChangeUserRoleResponse, error)
 	UserLogin(ctx context.Context, in *UserLoginCredentials, opts ...grpc.CallOption) (*UserLoginResposne, error)
 }
@@ -41,9 +41,9 @@ func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
 	return &authServiceClient{cc}
 }
 
-func (c *authServiceClient) CreateNewUser(ctx context.Context, in *NewUserRequest, opts ...grpc.CallOption) (*AuthToken, error) {
+func (c *authServiceClient) CreateNewUser(ctx context.Context, in *NewUserRequest, opts ...grpc.CallOption) (*NewUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AuthToken)
+	out := new(NewUserResponse)
 	err := c.cc.Invoke(ctx, AuthService_CreateNewUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -75,7 +75,7 @@ func (c *authServiceClient) UserLogin(ctx context.Context, in *UserLoginCredenti
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
 type AuthServiceServer interface {
-	CreateNewUser(context.Context, *NewUserRequest) (*AuthToken, error)
+	CreateNewUser(context.Context, *NewUserRequest) (*NewUserResponse, error)
 	ChangeUserRole(context.Context, *ChangeUserRoleRequest) (*ChangeUserRoleResponse, error)
 	UserLogin(context.Context, *UserLoginCredentials) (*UserLoginResposne, error)
 	mustEmbedUnimplementedAuthServiceServer()
@@ -88,7 +88,7 @@ type AuthServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAuthServiceServer struct{}
 
-func (UnimplementedAuthServiceServer) CreateNewUser(context.Context, *NewUserRequest) (*AuthToken, error) {
+func (UnimplementedAuthServiceServer) CreateNewUser(context.Context, *NewUserRequest) (*NewUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateNewUser not implemented")
 }
 func (UnimplementedAuthServiceServer) ChangeUserRole(context.Context, *ChangeUserRoleRequest) (*ChangeUserRoleResponse, error) {

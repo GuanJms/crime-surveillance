@@ -1,6 +1,7 @@
 package main
 
 import (
+	"brokerServiceApp/utils"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,10 +9,12 @@ import (
 
 const webPort = "8080"
 
-type Config struct{}
+type Config struct {
+}
 
 func main() {
 	app := Config{}
+	app.init()
 	log.Printf("Starting broker service on port %s\n", webPort)
 
 	srv := &http.Server{
@@ -23,4 +26,8 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+}
+
+func (*Config) init() {
+	utils.InitializeSecret()
 }
