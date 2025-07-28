@@ -43,14 +43,7 @@ build_auth:
 	@echo "Done!"
 
 
-generate_proto_crime:
-	@echo "Generate crime server proto file"
-	cd ../crime-service/proto && \
-	protoc --go_out=. --go-grpc_out=. \
-	--experimental_allow_proto3_optional \
-	--proto_path=. crime.proto
-	@echo "Done!"
-
+generate_proto_broker_service:
 	@echo "Generate broker-service crime proto file"
 	cd ../broker-service/internal/crime_broker/proto && \
 	protoc --go_out=. --go-grpc_out=. \
@@ -58,8 +51,22 @@ generate_proto_crime:
 	--proto_path=. crime.proto
 	@echo "Done!"
 
+	@echo "Generate broker-service auth proto file"
+	cd ../broker-service/internal/auth_broker/proto && \
+	protoc --go_out=. --go-grpc_out=. \
+	--experimental_allow_proto3_optional \
+	--proto_path=. auth.proto
+	@echo "Done!"
 
-generate_proto_auth:
+	@echo "Generate broker-service patrol proto file"
+	cd ../broker-service/internal/patrol_broker/proto && \
+	protoc --go_out=. --go-grpc_out=. \
+	--experimental_allow_proto3_optional \
+	--proto_path=. patrol.proto
+	@echo "Done!"
+
+
+generate_proto_auth_service:
 	@echo "Generate authentication-service auth proto file"
 	cd ../authentication-service/proto && \
 	protoc --go_out=. --go-grpc_out=. \
@@ -67,10 +74,24 @@ generate_proto_auth:
 	--proto_path=. auth.proto
 	@echo "Done!"
 
-	@echo "Generate broker-service crime proto file"
-	cd ../broker-service/internal/auth_broker/proto && \
+
+generate_proto_crime_service:
+	@echo "Generate crime-service crime proto file"
+	cd ../crime-service/proto && \
 	protoc --go_out=. --go-grpc_out=. \
 	--experimental_allow_proto3_optional \
-	--proto_path=. auth.proto
+	--proto_path=. crime.proto
 	@echo "Done!"
+
+
+
+generate_proto_patrol_service:
+	@echo "Generate patrol-service patrol proto file"
+	cd ../patrol-service/proto && \
+	protoc --go_out=. --go-grpc_out=. \
+	--experimental_allow_proto3_optional \
+	--proto_path=. patrol.proto
+	@echo "Done!"
+
+
 
