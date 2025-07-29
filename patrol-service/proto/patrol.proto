@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package patrolbroker;
+
+option go_package = "./patrolpb;patrolpb";
+
+enum PatrolStatus {
+    AVAILABLE = 0;
+    BUSY = 1;
+    OFF_DUTY = 2;
+}
+
+message Location{
+    string street = 1;
+    string city = 2;
+    string state = 3;
+    double latitude = 4;
+    double longitude = 5;
+}
+
+message Patrol{
+    string user_id = 1;
+    string officer_id = 2;
+    string officer_name = 3;
+    optional PatrolStatus status = 4;
+    optional Location location = 5; 
+    optional google.protobuf.Timestamp created_at = 6;
+    optional google.protobuf.Timestamp updated_at = 7;
+}
+
+message NewPatrolRegisterResponse{
+    string patrol_id = 1;
+    bool success = 2;
+    string message = 3;
+}
+
+message NewStatus{
+    PatrolStatus status = 1;
+    Location location = 2;
+}
+
+message GetPatrolInfoRequest{
+    optional string user_id = 1;
+    optional string officer_id = 2;
+    optional string officer_name = 3;
+    optional PatrolStatus status = 4;
+    optional string street = 5;
+    optional string city = 6;
+    optional string state = 7;
+}   
+
+message GetPatrolInfoResponse{
+    repeated Patrol patrols = 1;
+    bool success = 2;
+    optional string message = 3;
+}
+
+message UpdatePatrolLocationRequest{
+    string user_id = 1;
+    Location location = 2;
+}
+
+message UpdatePatrolLocationResponse{
+    string user_id = 1;
+    bool success = 2;
+}
+
+message AssignPatrolToCrimeRequest{
+    string patrol_id = 1;
+    string crime_id = 2;
+}
+
+message AssignPatrolToCrimeResponse{
+    string patrol_id = 1;
+    string crime_id = 2;
+    bool success = 3;
+    optional string message = 4;
+}
+
+message UpdatePatrolStatusRequest{
+    string patrol_id = 1;
+    PatrolStatus status = 2;
+}
+
+message UpdatePatrolStatusResponse{
+    string patrol_id = 1; 
+    bool success = 2;
+    optional string message = 3;
+}
+
+message GetOnePatrolInfoRequest{
+    string patrol_id = 1;
+}
+
+message GetOnePatrolInfoResponse{
+    Patrol patrol = 1;
+    bool success = 2;
+    optional string message = 3;
+}
+
+message UpdatePatrolInfoRequest{
+    string user_id = 1;
+    optional string officer_id = 2; 
+    optional string officer_name = 3;
+    optional PatrolStatus status = 4;
+    optional string street = 5;
+    optional string city = 6;
+    optional string state = 7;
+    optional double latitude = 8;
+    optional double longitude = 9;
+}
+
+message UpdatePatrolInfoResponse{
+    string patrol_id = 1; 
+    bool success = 2;
+    optional string message = 3;
+}
+
+service PatrolService{
+    rpc RegisterNewPatrol(Patrol) returns (NewPatrolRegisterResponse);
+    rpc GetAllPatrolInfo(GetPatrolInfoRequest) returns (GetPatrolInfoResponse);
+    rpc UpdatePatrolLocation(UpdatePatrolLocationRequest) returns (UpdatePatrolLocationResponse);
+    rpc AssignPatrolToCrime(AssignPatrolToCrimeRequest) returns (AssignPatrolToCrimeResponse);
+    rpc UpdatePatrolStatus(UpdatePatrolStatusRequest) returns (UpdatePatrolStatusResponse);
+    rpc PutPatrolInfo(UpdatePatrolInfoRequest) returns (UpdatePatrolInfoResponse);
+    rpc PatchPatrolInfo(UpdatePatrolInfoRequest) returns (UpdatePatrolInfoResponse);
+}

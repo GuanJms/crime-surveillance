@@ -1,20 +1,19 @@
 version: '3'
 
 services:
-  postgres:
-    image: 'postgres:16'
-    ports:
-      - "5435:5432"
+
+  broker-service:
+    build:
+      context: ./../broker-service
+      dockerfile: ./../broker-service/broker-service.dockerfile
     restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SECRET: ${SECRET}
     deploy:
       mode: replicated
       replicas: 1
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - ./db-data/postgres/:/var/lib/postgresql/data/
   
   crime-service:
     build:
@@ -42,17 +41,31 @@ services:
     environment:
       DSN: ${DSN_TEMPLATE}
       SECRET: ${SECRET}
-
-  broker-service:
+  
+  patrol-service:
     build:
-      context: ./../broker-service
-      dockerfile: ./../broker-service/broker-service.dockerfile
+      context: ./../patrol-service
+      dockerfile: ./../patrol-service/patrol-service.dockerfile
     restart: always
     ports:
-      - "8080:8080"
-    environment:
-      SECRET: ${SECRET}
+      - "50002:50002"
     deploy:
       mode: replicated
       replicas: 1
-    
+    environment:
+      DSN: ${DSN_TEMPLATE}
+
+  postgres:
+    image: 'postgres:16'
+    ports:
+      - "5435:5432"
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./db-data/postgres/:/var/lib/postgresql/data/

@@ -1,6 +1,7 @@
 CRIME_BINARY=crimeServiceApp
 BROKER_BINARY=brokerServiceApp
 AUTH_BINARY=authServiceApp
+PATROL_BINARY=patrolServiceApp
 
 up:
 	@echo "Starting Docker images.."
@@ -8,7 +9,7 @@ up:
 	@echo "Docker images started!"
 
 
-up_build: build_crime build_broker build_auth
+up_build: build_crime build_broker build_auth build_patrol 
 	@echo "Stopping docker images (if running...)"
 	docker-compose down
 	@echo "Building (when required) and starting docker images..."
@@ -16,7 +17,7 @@ up_build: build_crime build_broker build_auth
 	@echo "Docker images built and started!"
 
 
-build: build_crime build_broker build_auth
+build: build_crime build_broker build_auth build_patrol
 
 down:
 	@echo "Stopping docker compose..."
@@ -40,6 +41,11 @@ build_broker:
 build_auth:
 	@echo "Building crime binary..."
 	cd ../authentication-service && env GOOS=linux CGO_ENABLED=0 go build -o ${AUTH_BINARY} ./cmd/api
+	@echo "Done!"
+
+build_patrol:
+	@echo "Building patrol binary..."
+	cd ../patrol-service && env GOOS=linux CGO_ENABLED=0 go build -o ${PATROL_BINARY} ./cmd/api
 	@echo "Done!"
 
 
@@ -83,14 +89,18 @@ generate_proto_crime_service:
 	--proto_path=. crime.proto
 	@echo "Done!"
 
-
-
 generate_proto_patrol_service:
 	@echo "Generate patrol-service patrol proto file"
 	cd ../patrol-service/proto && \
 	protoc --go_out=. --go-grpc_out=. \
 	--experimental_allow_proto3_optional \
 	--proto_path=. patrol.proto
+	@echo "Done!"
+
+generate_sqlc_patrol_service:
+	@echo "Generate patrol-service sqlc file"
+	cd ../patrol-service && \
+	sqlc generate
 	@echo "Done!"
 
 

@@ -120,7 +120,7 @@ paths:
         '404':
           description: Crime not found
 
-  /patrols:
+  /patrols/register:
     post:
       summary: Register a police patrol
       security:
@@ -172,6 +172,29 @@ paths:
         '404':
           description: Patrol not found
 
+    patch:
+      summary: Update patrol info
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Patrol'
+      responses:
+        '200':
+          description: Patrol updated
+        '404':
+          description: Patrol not found
+  
+  /patrols/{id}/status:
     put:
       summary: Update patrol info
       security:
@@ -187,12 +210,37 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewStatus'
+              type: object
+              properties:
+                status:
+                  $ref: '#/components/schemas/PatrolStatus'
+
+  /patrols/{id}/location:
+    put:
+      summary: Update patrol info
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  $ref: '#/components/schemas/Location'
       responses:
         '200':
-          description: Patrol status updated
+          description: Patrol updated
         '404':
-          description: Patrol not found
+          description: Patrol not found or access Forbidden
+
   
   /dispatch:
     post:
@@ -430,14 +478,14 @@ components:
       type: object
       properties:
         userId:
-          type: integer
+          type: string
         officerId:
           type: string
         officerName:
           type: string
         status:
           type: string
-          enum: [available, busy]
+          $ref: '#/components/schemas/PatrolStatus'
         location:
           $ref: '#/components/schemas/Location'
       required: [userId, officerId, officerName]
@@ -446,14 +494,14 @@ components:
       type: object
       properties:
         userId:
-          type: integer
+          type: string
         officerId:
           type: string
         officerName:
           type: string
         status:
           type: string
-          enum: [available, busy]
+          $ref: '#/components/schemas/PatrolStatus'
       required: [userId, officerId, officerName]
 
     NewStatus:
@@ -461,7 +509,7 @@ components:
       properties:
         status:
           type: string
-          enum: [available, busy]
+          $ref: '#/components/schemas/PatrolStatus'
         location:
           $ref: '#/components/schemas/Location'
       required: [status, location]
@@ -469,6 +517,10 @@ components:
     CrimeStatus:
       type: string
       enum: [NEW, ASSIGNED, RESOLVED]
+    
+    PatrolStatus:
+      type: string
+      enum: [AVAILABLE, BUSY, OFF_DUTY]
 
     
     DispatchResult:

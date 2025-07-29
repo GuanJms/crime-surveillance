@@ -1,0 +1,14 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    schema:
+      - "../scripts/postgres/patrol/*"
+      - "../scripts/postgres/base/*"
+    queries: "./data/query"
+    gen:
+      go:
+        package: "patroldb"
+        out: "./data/gen"
+        sql_package: "pgx/v5"
+        emit_db_tags: true
+        emit_json_tags: false

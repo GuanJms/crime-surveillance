@@ -122,3 +122,4 @@ Authorization: Bearer <your-jwt-token>
 - Only patrols can update crime state
 - Street, City, State are assumed to be obtained from external server with latitude and longitude
 - Patrols are assumed to keep pushing location updates in real-time
+- Roles `CITIZEN`, `PATROL`, `DISPATCHER`, and `ADMIN` are modeled exclusively such that no one can be both roles at the same time (but easy to modify)

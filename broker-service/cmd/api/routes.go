@@ -3,6 +3,7 @@ package main
 import (
 	authbroker "brokerServiceApp/internal/auth_broker"
 	crimebroker "brokerServiceApp/internal/crime_broker"
+	patrolbroker "brokerServiceApp/internal/patrol_broker"
 	"log"
 	"net/http"
 
@@ -38,6 +39,12 @@ func (app *Config) routes() http.Handler {
 		log.Panic(err)
 	}
 	authBrokerHandler.AddTo(mux)
+
+	patrolBrokerHandler, err := patrolbroker.NewPatrolBrokerHandler()
+	if err != nil {
+		log.Panic(err)
+	}
+	patrolBrokerHandler.AddTo(mux)
 
 	return mux
 }

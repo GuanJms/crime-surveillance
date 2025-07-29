@@ -34,6 +34,19 @@ func NewCrimeBrokerHandler() (*CrimeBrokerHandler, error) {
 	}, nil
 }
 
+func (h *CrimeBrokerHandler) AddTo(r chi.Router) {
+	r.Route("/crimes", func(crime chi.Router) {
+		crime.Get("/", h.ListAllCrimes)
+		crime.Group(func(protected chi.Router) {
+			protected.Use(authmiddleware.JWTMiddleware(utils.Secret))
+			protected.Post("/", h.SubmitNewCrime)
+			protected.With(authmiddleware.RequireRole("PATROL", "DISPATCHER", "ADMIN")).Put("/{id}", h.PutCrime)
+			protected.With(authmiddleware.RequireRole("PATROL", "DISPATCHER", "ADMIN")).Patch("/{id}", h.PatchCrime)
+			protected.With(authmiddleware.RequireRole("ADMIN")).Delete("/{id}", h.DeleteCrime)
+		})
+	})
+}
+
 // TODO: implement list all crimes handlers
 func (h *CrimeBrokerHandler) ListAllCrimes(w http.ResponseWriter, r *http.Request) {
 	if h.GrpcConn == nil {
@@ -185,17 +198,4 @@ func (h *CrimeBrokerHandler) DeleteCrime(w http.ResponseWriter, r *http.Request)
 	}
 	// successful response
 	utils.WriteJSON(w, http.StatusOK, resp)
-}
-
-func (h *CrimeBrokerHandler) AddTo(r chi.Router) {
-	r.Route("/crimes", func(crime chi.Router) {
-		crime.Get("/", h.ListAllCrimes)
-		crime.Group(func(protected chi.Router) {
-			protected.Use(authmiddleware.JWTMiddleware(utils.Secret))
-			protected.Post("/", h.SubmitNewCrime)
-			protected.With(authmiddleware.RequireRole("PATROL", "DISPATCHER", "ADMIN")).Put("/{id}", h.PutCrime)
-			protected.With(authmiddleware.RequireRole("PATROL", "DISPATCHER", "ADMIN")).Patch("/{id}", h.PatchCrime)
-			protected.With(authmiddleware.RequireRole("ADMIN")).Delete("/{id}", h.DeleteCrime)
-		})
-	})
 }
