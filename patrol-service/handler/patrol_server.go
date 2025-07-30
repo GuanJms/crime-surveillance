@@ -7,11 +7,20 @@ import (
 	"patrolServiceApp/data"
 	"patrolServiceApp/proto/patrolpb"
 	"patrolServiceApp/ptr"
+	"time"
+)
+
+const (
+	syncPatrolLocationInterval = time.Second * 10
 )
 
 type PatrolServer struct {
 	patrolpb.UnimplementedPatrolServiceServer
 	PatrolModel *data.PatrolModel
+}
+
+func (s *PatrolServer) Init() {
+	s.startSyncPatrolLocation(syncPatrolLocationInterval)
 }
 
 func (s *PatrolServer) RegisterNewPatrol(ctx context.Context, req *patrolpb.Patrol) (*patrolpb.NewPatrolRegisterResponse, error) {
@@ -91,6 +100,7 @@ func (s *PatrolServer) UpdatePatrolLocation(ctx context.Context, req *patrolpb.U
 	if err != nil {
 		return nil, err
 	}
+
 	return &patrolpb.UpdatePatrolLocationResponse{
 		UserId:  patrolId,
 		Success: true,
@@ -112,4 +122,18 @@ func (s *PatrolServer) UpdatePatrolStatus(ctx context.Context, req *patrolpb.Upd
 		Success:  true,
 		Message:  ptr.Of("successfully updated status"),
 	}, nil
+}
+
+func (s *PatrolServer) startSyncPatrolLocation(interval time.Duration) {
+	ticker := time.NewTicker(interval)
+	go func() {
+		log.Printf("Sync patrol location started")
+		defer ticker.Stop() // keep ticker alive durign go sync timeline
+		for range ticker.C {
+			if err := s.PatrolModel.FastRepo.SyncPatrolLocation(); err != nil {
+				log.Printf("Syn patrol location error: ", err)
+			}
+		}
+		log.Printf("Sync patrol location stopped")
+	}()
 }

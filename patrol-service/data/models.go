@@ -25,8 +25,8 @@ func NewRepository(pool *pgxpool.Pool) Repository {
 	}
 }
 
-func NewFastRepository() FastRepository {
-	return NewRedisRepository()
+func NewFastRepository(persistRepo Repository) FastRepository {
+	return NewRedisRepository(persistRepo)
 }
 
 type Location struct {

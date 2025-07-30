@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"errors"
+	"log"
 	patroldb "patrolServiceApp/data/gen"
 	"patrolServiceApp/ptr"
 	"time"
@@ -103,6 +104,8 @@ func (repo *PostgresRepository) PutPatrolInfo(req *UpdatePatrolInfoRequest) erro
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
+	log.Printf("PutPatrolInfo - Receiving put patrol info request: %v", req)
+
 	params := patroldb.UpdateAllPatrolByUserIDParams{
 		OfficerID:   ptr.Deref(req.OfficerId),
 		OfficerName: ptr.Deref(req.OfficerName),
@@ -123,6 +126,8 @@ func (repo *PostgresRepository) PutPatrolInfo(req *UpdatePatrolInfoRequest) erro
 	if rows == 0 {
 		return ErrNotFound
 	}
+
+	log.Printf("PutPatrolInfo - Updated %d rows", rows)
 
 	return nil
 }

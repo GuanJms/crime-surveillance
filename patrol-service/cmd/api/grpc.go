@@ -19,12 +19,15 @@ func (app *Config) gRPCListen() {
 
 	s := grpc.NewServer()
 
-	patrolpb.RegisterPatrolServiceServer(s, &handler.PatrolServer{
+	patrolServer := &handler.PatrolServer{
 		PatrolModel: &data.PatrolModel{
 			Repo:     app.Repo,
 			FastRepo: app.FastRepo,
 		},
-	})
+	}
+
+	patrolpb.RegisterPatrolServiceServer(s, patrolServer)
+	patrolServer.Init()
 
 	log.Printf("gRPC Server started on port %s", gRpcPort)
 

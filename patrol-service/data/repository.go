@@ -11,4 +11,6 @@ type Repository interface {
 
 type FastRepository interface {
 	UpdatePatrolLocation(id string, location *Location) error
+	PersistUpdatePatrolLocation(patrolId string, location *Location) error
+	SyncPatrolLocation() error
 }

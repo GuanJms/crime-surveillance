@@ -27,7 +27,7 @@ func main() {
 
 	app := Config{}
 	app.setupRepo(conn)
-	app.setupFastRepo()
+	app.setupFastRepo(app.Repo)
 
 	app.gRPCListen()
 }
@@ -90,7 +90,7 @@ func (app *Config) setupRepo(conn *pgxpool.Pool) {
 	app.Repo = db
 }
 
-func (app *Config) setupFastRepo() {
-	db := data.NewFastRepository()
+func (app *Config) setupFastRepo(persistRepo data.Repository) {
+	db := data.NewFastRepository(persistRepo)
 	app.FastRepo = db
 }
