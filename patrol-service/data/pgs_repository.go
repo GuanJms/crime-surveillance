@@ -163,6 +163,27 @@ func (repo *PostgresRepository) PatchPatrolInfo(req *UpdatePatrolInfoRequest) er
 	return nil
 }
 
+func (repo *PostgresRepository) UpdatePatrolStatus(patrol_id string, status string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	params := patroldb.UpdatePatrolStatusByUserIDParams{
+		Status: patroldb.PatrolStatus(status),
+		UserID: parseUUID(patrol_id),
+	}
+
+	rows, err := repo.q.UpdatePatrolStatusByUserID(ctx, params)
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return ErrNotFound
+	}
+
+	return nil
+}
+
 func toPatrol(src patroldb.PatrolProfile) *Patrol {
 	p := &Patrol{
 		UserID:      ptr.Of(src.UserID.String()),

@@ -2,7 +2,7 @@ package crimebroker
 
 import (
 	"brokerServiceApp/internal/crime_broker/proto/crimepb"
-	"brokerServiceApp/utils"
+	"brokerServiceApp/internal/ptr"
 	"errors"
 	"strings"
 	"time"
@@ -56,8 +56,8 @@ func (dto *UpdateCrimeReportRequestDTO) toProto() (*crimepb.UpdateCrimeReportReq
 		return nil, err
 	}
 	var req crimepb.UpdateCrimeReportRequest
-	req.Id = utils.DeferOrZero(dto.Id)
-	req.ReporterId = utils.DeferOrZero(dto.ReporterId)
+	req.Id = ptr.DeferOrZero(dto.Id)
+	req.ReporterId = ptr.DeferOrZero(dto.ReporterId)
 	req.PatrolId = dto.PatrolId
 	req.Description = dto.Description
 	req.Status = &status

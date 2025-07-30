@@ -1,7 +1,7 @@
 package main
 
 import (
-	"brokerServiceApp/utils"
+	"brokerServiceApp/internal/utils"
 	"fmt"
 	"log"
 	"net/http"

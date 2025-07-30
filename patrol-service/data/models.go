@@ -13,7 +13,8 @@ import (
 )
 
 type PatrolModel struct {
-	Repo Repository
+	Repo     Repository
+	FastRepo FastRepository
 }
 
 func NewRepository(pool *pgxpool.Pool) Repository {
@@ -24,12 +25,17 @@ func NewRepository(pool *pgxpool.Pool) Repository {
 	}
 }
 
+func NewFastRepository() FastRepository {
+	return NewRedisRepository()
+}
+
 type Location struct {
-	Street    *string  `json:"street,omitempty" db:"street"`
-	City      *string  `json:"city,omitempty" db:"city"`
-	State     *string  `json:"state,omitempty" db:"state"`
-	Latitude  *float64 `json:"latitude,omitempty" db:"latitude"`
-	Longitude *float64 `json:"longitude,omitempty" db:"longitude"`
+	Street    *string    `json:"street,omitempty" db:"street" redis:"street"`
+	City      *string    `json:"city,omitempty" db:"city" redis:"city"`
+	State     *string    `json:"state,omitempty" db:"state" redis:"state"`
+	Latitude  *float64   `json:"latitude,omitempty" db:"latitude" redis:"latitude"`
+	Longitude *float64   `json:"longitude,omitempty" db:"longitude" redis:"longitude"`
+	Timestamp *time.Time `reids:"timestamp"`
 }
 
 type Patrol struct {
@@ -218,4 +224,22 @@ func UpdatePatrolInfoRequestFromProto(req *patrolpb.UpdatePatrolInfoRequest) *Up
 		Latitude:    req.Latitude,
 		Longitude:   req.Longitude,
 	}
+}
+
+func UpdatePatrolLocationRequestFromProto(req *patrolpb.UpdatePatrolLocationRequest) (string, *Location, error) {
+	if req == nil {
+		return "", nil, fmt.Errorf("update patrol location request is nil")
+	}
+	patrolId := req.UserId
+	lp := req.Location
+	if lp == nil {
+		return patrolId, nil, fmt.Errorf("update patrol location request location is nil")
+	}
+	return patrolId, &Location{
+		Street:    &lp.Street,
+		City:      &lp.City,
+		State:     &lp.State,
+		Latitude:  &lp.Latitude,
+		Longitude: &lp.Longitude,
+	}, nil
 }

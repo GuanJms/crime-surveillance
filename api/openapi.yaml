@@ -172,6 +172,28 @@ paths:
         '404':
           description: Patrol not found
 
+    put:
+      summary: Update patrol info
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatrolUpdate'
+      responses:
+        '200':
+          description: Patrol updated
+        '404':
+          description: Patrol not found
+
     patch:
       summary: Update patrol info
       security:
@@ -187,7 +209,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Patrol'
+              $ref: '#/components/schemas/PatrolUpdate'
       responses:
         '200':
           description: Patrol updated
@@ -196,7 +218,7 @@ paths:
   
   /patrols/{id}/status:
     put:
-      summary: Update patrol info
+      summary: Update patrol status
       security:
         - BearerAuth: []
       parameters:
@@ -214,10 +236,16 @@ paths:
               properties:
                 status:
                   $ref: '#/components/schemas/PatrolStatus'
+      responses:
+        '200':
+          description: Patrol status updated
+        '404':
+          description: Patrol not found or access denided
 
+        
   /patrols/{id}/location:
     put:
-      summary: Update patrol info
+      summary: Update patrol location
       security:
         - BearerAuth: []
       parameters:
@@ -233,15 +261,14 @@ paths:
             schema:
               type: object
               properties:
-                status:
+                location:
                   $ref: '#/components/schemas/Location'
       responses:
         '200':
           description: Patrol updated
         '404':
-          description: Patrol not found or access Forbidden
+          description: Patrol not found or access denided
 
-  
   /dispatch:
     post:
       summary: Assign patrol to an existing crime
@@ -265,6 +292,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/DispatchResult'
   
+
   /users/register:
     post:
       summary: Register a new user
@@ -489,6 +517,30 @@ components:
         location:
           $ref: '#/components/schemas/Location'
       required: [userId, officerId, officerName]
+
+    PatrolUpdate:
+      type: object
+      properties:
+        officerId:
+          type: string
+        officerName:
+          type: string
+        status:
+          type: string
+          $ref: '#/components/schemas/PatrolStatus'
+        street:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+      required: [officerId]
 
     NewPatrol:
       type: object

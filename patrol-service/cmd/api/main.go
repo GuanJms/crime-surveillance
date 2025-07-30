@@ -15,7 +15,8 @@ const (
 )
 
 type Config struct {
-	Repo data.Repository
+	Repo     data.Repository
+	FastRepo data.FastRepository
 }
 
 func main() {
@@ -26,6 +27,7 @@ func main() {
 
 	app := Config{}
 	app.setupRepo(conn)
+	app.setupFastRepo()
 
 	app.gRPCListen()
 }
@@ -86,4 +88,9 @@ func connectToDB() *pgxpool.Pool {
 func (app *Config) setupRepo(conn *pgxpool.Pool) {
 	db := data.NewRepository(conn)
 	app.Repo = db
+}
+
+func (app *Config) setupFastRepo() {
+	db := data.NewFastRepository()
+	app.FastRepo = db
 }

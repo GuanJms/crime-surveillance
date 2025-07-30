@@ -21,7 +21,8 @@ func (app *Config) gRPCListen() {
 
 	patrolpb.RegisterPatrolServiceServer(s, &handler.PatrolServer{
 		PatrolModel: &data.PatrolModel{
-			Repo: app.Repo,
+			Repo:     app.Repo,
+			FastRepo: app.FastRepo,
 		},
 	})
 

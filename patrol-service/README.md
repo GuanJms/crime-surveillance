@@ -23,3 +23,11 @@ It manages the status of `PATROL` that includes location and availability.
 ## Assumptions
 
 At the user end, patrol is scheduled to update location every second, and every two seconds the location and status will be populated to Postgres for data persistence. 
+
+## Redis
+
+Redis is used for fast updating with patrols. 
+
+### Redis Modelings
+
+- Location updating in Redis does not allow partial updating, only update the full location once to prevent inconsistency

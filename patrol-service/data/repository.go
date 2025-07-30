@@ -6,4 +6,9 @@ type Repository interface {
 	GetAllPatrols(*GetPatrolInfoRequest) ([]*Patrol, error)
 	PutPatrolInfo(*UpdatePatrolInfoRequest) error
 	PatchPatrolInfo(*UpdatePatrolInfoRequest) error
+	UpdatePatrolStatus(id string, status string) error
+}
+
+type FastRepository interface {
+	UpdatePatrolLocation(id string, location *Location) error
 }

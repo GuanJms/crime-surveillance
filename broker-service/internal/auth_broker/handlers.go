@@ -3,7 +3,7 @@ package authbroker
 import (
 	"brokerServiceApp/internal/auth_broker/proto/authpb"
 	"brokerServiceApp/internal/authmiddleware"
-	"brokerServiceApp/utils"
+	"brokerServiceApp/internal/utils"
 	"context"
 	"encoding/json"
 	"errors"

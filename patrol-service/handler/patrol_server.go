@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"patrolServiceApp/data"
 	"patrolServiceApp/proto/patrolpb"
@@ -77,7 +78,24 @@ func (s *PatrolServer) PatchPatrolInfo(ctx context.Context, req *patrolpb.Update
 }
 
 func (s *PatrolServer) UpdatePatrolLocation(ctx context.Context, req *patrolpb.UpdatePatrolLocationRequest) (*patrolpb.UpdatePatrolLocationResponse, error) {
-	panic("not implemented")
+	patrolId, location, err := data.UpdatePatrolLocationRequestFromProto(req)
+	if err != nil {
+		return nil, err
+	}
+	if location == nil {
+		return nil, fmt.Errorf("no location available")
+	}
+
+	// log.Printf("Updating patrol location for patrolId: %s, location: %v", patrolId, location)
+	err = s.PatrolModel.FastRepo.UpdatePatrolLocation(patrolId, location)
+	if err != nil {
+		return nil, err
+	}
+	return &patrolpb.UpdatePatrolLocationResponse{
+		UserId:  patrolId,
+		Success: true,
+	}, nil
+
 }
 
 func (s *PatrolServer) AssignPatrolToCrime(ctx context.Context, req *patrolpb.AssignPatrolToCrimeRequest) (*patrolpb.AssignPatrolToCrimeResponse, error) {
@@ -85,5 +103,13 @@ func (s *PatrolServer) AssignPatrolToCrime(ctx context.Context, req *patrolpb.As
 }
 
 func (s *PatrolServer) UpdatePatrolStatus(ctx context.Context, req *patrolpb.UpdatePatrolStatusRequest) (*patrolpb.UpdatePatrolStatusResponse, error) {
-	panic("not implemented")
+	err := s.PatrolModel.Repo.UpdatePatrolStatus(req.PatrolId, req.Status.String())
+	if err != nil {
+		return nil, err
+	}
+	return &patrolpb.UpdatePatrolStatusResponse{
+		PatrolId: req.PatrolId,
+		Success:  true,
+		Message:  ptr.Of("successfully updated status"),
+	}, nil
 }

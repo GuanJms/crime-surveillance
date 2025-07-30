@@ -3,7 +3,7 @@ package crimebroker
 import (
 	"brokerServiceApp/internal/authmiddleware"
 	"brokerServiceApp/internal/crime_broker/proto/crimepb"
-	"brokerServiceApp/utils"
+	"brokerServiceApp/internal/utils"
 	"context"
 	"encoding/json"
 	"errors"
