@@ -52,17 +52,21 @@ See full OpenAPI spec: [openapi.yaml](./api/openapi.yaml)
 | Method | Path               | Description                          | Auth Required |
 |--------|--------------------|--------------------------------------|---------------|
 | GET    | `/crimes`          | List all crime reports               | No            |
-| POST   | `/crimes`          | Submit a new crime report            | No            |
-| PUT    | `/crimes/{id}`     | Update crime status or assign patrol | Yes           |
+| POST   | `/crimes`          | Submit a new crime report            | Yes           |
+| PUT    | `/crimes/{id}`     | Update and overwrite crime status    | Yes           |
+| PATCH  | `/crimes/{id}`     | Partially update crime status        | Yes           |
 | DELETE | `/crimes/{id}`     | Delete a crime by ID                 | Yes           |
 
 ### Patrol Management Endpoints
 | Method | Path               | Description                          | Auth Required |
 |--------|--------------------|--------------------------------------|---------------|
-| GET    | `/patrols`         | List all patrols and their status   | Yes           |
-| POST   | `/patrols`         | Register a new police patrol         | Yes           |
+| GET    | `/patrols/register` | List all patrols and their status   | Yes           |
+| POST   | `/patrols/register` | Register a new police patrol         | Yes           |
 | GET    | `/patrols/{id}`    | Get specific patrol information      | Yes           |
-| PUT    | `/patrols/{id}`    | Update patrol status and location    | Yes           |
+| PUT    | `/patrols/{id}`    | Update patrol info (full update)     | Yes           |
+| PATCH  | `/patrols/{id}`    | Update patrol info (partial update)  | Yes           |
+| PUT    | `/patrols/{id}/status` | Update patrol status only        | Yes           |
+| PUT    | `/patrols/{id}/location` | Update patrol location only     | Yes           |
 
 ### Dispatch Endpoints
 | Method | Path               | Description                          | Auth Required |
@@ -72,20 +76,28 @@ See full OpenAPI spec: [openapi.yaml](./api/openapi.yaml)
 ### Authentication Endpoints
 | Method | Path               | Description                          | Auth Required |
 |--------|--------------------|--------------------------------------|---------------|
-| PATCH   | `/admin/users/{id}/role` | Admin sign in for system access| Yes           |
-| POST    | `/users`                 | Register new user (as CITIZEN) | No           |
+| POST   | `/users/register`   | Register new user                    | Yes           |
+| POST   | `/users/login`      | User login                          | No            |
+| PATCH  | `/admin/users/{id}/role` | Admin change user role         | Yes           |
 ---
 
 ## Data Models
 
 ### Crime Status Values
-- `new`: Initial crime report
-- `assigned`: Patrol has been assigned
-- `resolved`: Crime has been resolved
+- `NEW`: Initial crime report
+- `ASSIGNED`: Patrol has been assigned
+- `RESOLVED`: Crime has been resolved
 
 ### Patrol Status Values
-- `available`: Patrol is available for assignment
-- `busy`: Patrol is currently responding to a call
+- `AVAILABLE`: Patrol is available for assignment
+- `BUSY`: Patrol is currently responding to a call
+- `OFF_DUTY`: Patrol is off duty
+
+### User Roles
+- `CITIZEN`: Regular citizen who can report crimes
+- `PATROL`: Police patrol officer
+- `DISPATCHER`: Police dispatcher who can assign patrols
+- `ADMIN`: System administrator
 
 ### Location Object
 ```json
