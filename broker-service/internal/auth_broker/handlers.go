@@ -125,12 +125,7 @@ func (h *AuthBrokerHandler) UserLogin(w http.ResponseWriter, r *http.Request) {
 func (h *AuthBrokerHandler) AddTo(r chi.Router) {
 	r.Route("/users", func(users chi.Router) {
 		users.Post("/login", h.UserLogin)
-		users.Group(func(protected chi.Router) {
-			protected.Use(authmiddleware.JWTMiddleware(utils.Secret))
-			protected.With(authmiddleware.RequireRole("ADMIN")).Post("/register", h.CreateNewUser)
-			// users.Post("/register", h.CreateNewUser)
-		})
-
+		users.Post("/register", h.CreateNewUser)
 	})
 
 	r.Group(func(protected chi.Router) {

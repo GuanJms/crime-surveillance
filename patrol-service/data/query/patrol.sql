@@ -79,3 +79,18 @@ SET street = sqlc.arg('street'),
     latitude = sqlc.arg('latitude'),
     longitude = sqlc.arg('longitude')
 WHERE user_id = sqlc.arg('user_id');
+
+-- name: UpdateUserRoleByUserID :execrows
+UPDATE users
+SET role = sqlc.arg('role')
+WHERE id = sqlc.arg('user_id');
+
+-- name: UpdatePatrolStatusByUserIDStatus :execrows
+UPDATE patrol_profile
+SET status = sqlc.arg('patrol_status')
+WHERE user_id = sqlc.arg('user_id') AND status = sqlc.arg('condition_status');
+
+-- name: CheckUserExistByUserID :execrows
+SELECT 1
+FROM users
+WHERE id = sqlc.arg('user_id');

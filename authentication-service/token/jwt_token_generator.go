@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	tokenExpiry = time.Minute * 15
+	tokenExpiry = time.Minute * 300
 )
 
 var secret = []byte(os.Getenv("SECRET"))

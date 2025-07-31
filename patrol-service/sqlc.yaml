@@ -2,8 +2,10 @@ version: "2"
 sql:
   - engine: "postgresql"
     schema:
+      - "../scripts/postgres/user/*"
       - "../scripts/postgres/patrol/*"
       - "../scripts/postgres/base/*"
+      - "../scripts/postgres/crime/*"
     queries: "./data/query"
     gen:
       go:

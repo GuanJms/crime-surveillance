@@ -11,6 +11,20 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const checkUserExistByUserID = `-- name: CheckUserExistByUserID :execrows
+SELECT 1
+FROM users
+WHERE id = $1
+`
+
+func (q *Queries) CheckUserExistByUserID(ctx context.Context, userID pgtype.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, checkUserExistByUserID, userID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const deletePatrolByUserID = `-- name: DeletePatrolByUserID :execrows
 DELETE FROM patrol_profile
 WHERE user_id = $1
@@ -283,6 +297,45 @@ type UpdatePatrolStatusByUserIDParams struct {
 
 func (q *Queries) UpdatePatrolStatusByUserID(ctx context.Context, arg UpdatePatrolStatusByUserIDParams) (int64, error) {
 	result, err := q.db.Exec(ctx, updatePatrolStatusByUserID, arg.Status, arg.UserID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const updatePatrolStatusByUserIDStatus = `-- name: UpdatePatrolStatusByUserIDStatus :execrows
+UPDATE patrol_profile
+SET status = $1
+WHERE user_id = $2 AND status = $3
+`
+
+type UpdatePatrolStatusByUserIDStatusParams struct {
+	PatrolStatus    PatrolStatus `db:"patrol_status"`
+	UserID          pgtype.UUID  `db:"user_id"`
+	ConditionStatus PatrolStatus `db:"condition_status"`
+}
+
+func (q *Queries) UpdatePatrolStatusByUserIDStatus(ctx context.Context, arg UpdatePatrolStatusByUserIDStatusParams) (int64, error) {
+	result, err := q.db.Exec(ctx, updatePatrolStatusByUserIDStatus, arg.PatrolStatus, arg.UserID, arg.ConditionStatus)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const updateUserRoleByUserID = `-- name: UpdateUserRoleByUserID :execrows
+UPDATE users
+SET role = $1
+WHERE id = $2
+`
+
+type UpdateUserRoleByUserIDParams struct {
+	Role   UserRole    `db:"role"`
+	UserID pgtype.UUID `db:"user_id"`
+}
+
+func (q *Queries) UpdateUserRoleByUserID(ctx context.Context, arg UpdateUserRoleByUserIDParams) (int64, error) {
+	result, err := q.db.Exec(ctx, updateUserRoleByUserID, arg.Role, arg.UserID)
 	if err != nil {
 		return 0, err
 	}

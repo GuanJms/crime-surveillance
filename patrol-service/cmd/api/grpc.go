@@ -24,6 +24,9 @@ func (app *Config) gRPCListen() {
 			Repo:     app.Repo,
 			FastRepo: app.FastRepo,
 		},
+		CrimeModel: &data.CrimeModel{
+			Repo: app.CrimeRepo,
+		},
 	}
 
 	patrolpb.RegisterPatrolServiceServer(s, patrolServer)

@@ -5,18 +5,21 @@ import (
 	"log"
 	"os"
 	"patrolServiceApp/data"
+	crimerepo "patrolServiceApp/data/crime_repo"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const (
-	gRpcPort = "50002"
+	gRpcPort     = "50002"
+	crimeService = "crime-service:50001"
 )
 
 type Config struct {
-	Repo     data.Repository
-	FastRepo data.FastRepository
+	Repo      data.Repository
+	FastRepo  data.FastRepository
+	CrimeRepo data.CrimeRepository
 }
 
 func main() {
@@ -28,6 +31,7 @@ func main() {
 	app := Config{}
 	app.setupRepo(conn)
 	app.setupFastRepo(app.Repo)
+	app.setupCrimeRepo()
 
 	app.gRPCListen()
 }
@@ -93,4 +97,12 @@ func (app *Config) setupRepo(conn *pgxpool.Pool) {
 func (app *Config) setupFastRepo(persistRepo data.Repository) {
 	db := data.NewFastRepository(persistRepo)
 	app.FastRepo = db
+}
+
+func (app *Config) setupCrimeRepo() {
+	repo, err := crimerepo.NewCrimeRepository(crimeService)
+	if err != nil {
+		log.Fatalf("Failed to create crime repository: %v", err)
+	}
+	app.CrimeRepo = repo
 }

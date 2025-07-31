@@ -91,6 +91,10 @@ func (h *RequireRoleMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Log claims
+	// log.Printf("RequireRoleMiddleware - claims: %v", claims)
+	// log.Printf("RequireRoleMiddleware - roles required: %v", h.Roles)
+
 	for _, role := range h.Roles {
 		for _, userRole := range claims.Roles {
 			if userRole == role {

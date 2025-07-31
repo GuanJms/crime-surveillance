@@ -17,6 +17,10 @@ type PatrolModel struct {
 	FastRepo FastRepository
 }
 
+type CrimeModel struct {
+	Repo CrimeRepository
+}
+
 func NewRepository(pool *pgxpool.Pool) Repository {
 	if pool == nil {
 		return nil

@@ -33,6 +33,25 @@ func NewPostgresRepository(pool *pgxpool.Pool) *PostgresRepository {
 	}
 }
 
+func (repo *PostgresRepository) UpdateUserRole(userId string, role string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	params := patroldb.UpdateUserRoleByUserIDParams{
+		Role:   patroldb.UserRole(role),
+		UserID: parseUUID(userId),
+	}
+
+	rows, err := repo.q.UpdateUserRoleByUserID(ctx, params)
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return ErrNotFound
+	}
+	return nil
+}
+
 func (repo *PostgresRepository) InsertPatrol(p *Patrol) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -168,7 +187,15 @@ func (repo *PostgresRepository) PatchPatrolInfo(req *UpdatePatrolInfoRequest) er
 	return nil
 }
 
-func (repo *PostgresRepository) UpdatePatrolStatus(patrol_id string, status string) error {
+func (repo *PostgresRepository) UpdatePatrolStatus(patrol_id string, status string, conditionStatus *string) error {
+	if conditionStatus == nil {
+		return repo.updatePatrolStatus(patrol_id, status)
+	} else {
+		return repo.updatePatrolStatusCondition(patrol_id, status, *conditionStatus)
+	}
+}
+
+func (repo *PostgresRepository) updatePatrolStatus(patrol_id string, status string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
@@ -178,6 +205,28 @@ func (repo *PostgresRepository) UpdatePatrolStatus(patrol_id string, status stri
 	}
 
 	rows, err := repo.q.UpdatePatrolStatusByUserID(ctx, params)
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return ErrNotFound
+	}
+
+	return nil
+}
+
+func (repo *PostgresRepository) updatePatrolStatusCondition(patrol_id string, status string, conditionStatus string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	params := patroldb.UpdatePatrolStatusByUserIDStatusParams{
+		PatrolStatus:    patroldb.PatrolStatus(status),
+		UserID:          parseUUID(patrol_id),
+		ConditionStatus: patroldb.PatrolStatus(conditionStatus),
+	}
+
+	rows, err := repo.q.UpdatePatrolStatusByUserIDStatus(ctx, params)
 	if err != nil {
 		return err
 	}

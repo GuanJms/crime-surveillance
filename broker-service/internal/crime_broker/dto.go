@@ -57,7 +57,7 @@ func (dto *UpdateCrimeReportRequestDTO) toProto() (*crimepb.UpdateCrimeReportReq
 	}
 	var req crimepb.UpdateCrimeReportRequest
 	req.Id = ptr.DeferOrZero(dto.Id)
-	req.ReporterId = ptr.DeferOrZero(dto.ReporterId)
+	req.ReporterId = dto.ReporterId
 	req.PatrolId = dto.PatrolId
 	req.Description = dto.Description
 	req.Status = &status

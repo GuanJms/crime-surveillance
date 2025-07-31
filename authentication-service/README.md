@@ -8,6 +8,19 @@ Authentication service should include authentication verification that include J
 - Admin can change the role of user
 - Service can receive login credentails and issue JTW token
 
+### Token Clain Structure
+
+Please see `jwt_token_generator.go` for more details.
+
+The token is structured with Roles (`[]string`) and `jwt.RegisteredClaims`
+    - Roles : a list of roles of user (for now, only one role in the list as roles are mutually exclusive)
+    - RegisteredClaims:
+        - Subject: user ID 
+        - ExpiresAt : issue time + 15 mins
+        - Issuer: `auth-service`
+        - IssueAt: issue time
+
+
 <!-- Note:
 Client should send loging credentials to authentication service and service should provide JTW token.
 

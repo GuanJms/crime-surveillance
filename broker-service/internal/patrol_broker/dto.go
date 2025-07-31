@@ -47,6 +47,11 @@ type UpdatePatrolLocationRequestDTO struct {
 	Location *LocationDTO `json:"location"`
 }
 
+type AssignPatrolToCrimeRequestDTO struct {
+	PatrolID string
+	CrimeID  string
+}
+
 func (dto *PatrolDTO) ToProto() *patrolpb.Patrol {
 	var status patrolpb.PatrolStatus
 	var location *patrolpb.Location
@@ -166,5 +171,16 @@ func (dto *UpdatePatrolLocationRequestDTO) ToProto() (*patrolpb.UpdatePatrolLoca
 	return &patrolpb.UpdatePatrolLocationRequest{
 		UserId:   dto.UserID,
 		Location: location,
+	}, nil
+}
+
+func (dto *AssignPatrolToCrimeRequestDTO) ToProto() (*patrolpb.AssignPatrolToCrimeRequest, error) {
+	if dto == nil {
+		return nil, fmt.Errorf("AssignPatrolToCrimeRequestDTO is empty")
+	}
+
+	return &patrolpb.AssignPatrolToCrimeRequest{
+		CrimeId:  dto.CrimeID,
+		PatrolId: dto.PatrolID,
 	}, nil
 }

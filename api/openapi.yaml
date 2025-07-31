@@ -105,7 +105,7 @@ paths:
         '404':
           description: Crime not found
     delete:
-      summary:  Delete a crime by ID
+      summary:  Delete a crime by ID; Requires ADMIN, DISPATCHER, and 
       security:
         - BearerAuth: []
       parameters:
@@ -122,7 +122,7 @@ paths:
 
   /patrols/register:
     post:
-      summary: Register a police patrol
+      summary: Register a police patrol; Admin required
       security:
         - BearerAuth: []
       requestBody:
@@ -139,7 +139,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Patrol'
     get:
-      summary: List all patrols and status
+      summary: List all patrols and status; Patrol, Dispatcher, Admin required
       security:
         - BearerAuth: []
       responses:
@@ -151,9 +151,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Patrol'
+
   /patrols/{id}:
     get:
-      summary: Get patrol info
+      summary: Get patrol info; Admin and dispatcher required
       security:
         - BearerAuth: []
       parameters:
@@ -173,7 +174,7 @@ paths:
           description: Patrol not found
 
     put:
-      summary: Update patrol info
+      summary: Update patrol info; Admin required
       security:
         - BearerAuth: []
       parameters:
@@ -195,7 +196,7 @@ paths:
           description: Patrol not found
 
     patch:
-      summary: Update patrol info
+      summary: Update patrol info; Admin required
       security:
         - BearerAuth: []
       parameters:
@@ -215,7 +216,48 @@ paths:
           description: Patrol updated
         '404':
           description: Patrol not found
-  
+
+  /patrols/status:
+    put:
+      summary: patrol update their status through authentication token 
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  $ref: '#/components/schemas/PatrolStatus'
+      responses:
+        '200':
+          description: Patrol status updated
+        '404':
+          description: Patrol not found or access denided 
+        
+  /patrols/location:
+    put:
+      summary: patrol update their location through authentication token 
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  $ref: '#/components/schemas/Location'
+      responses:
+        '200':
+          description: Patrol updated
+        '404':
+          description: Patrol not found or access denided
+
+
   /patrols/{id}/status:
     put:
       summary: Update patrol status
@@ -242,7 +284,6 @@ paths:
         '404':
           description: Patrol not found or access denided
 
-        
   /patrols/{id}/location:
     put:
       summary: Update patrol location
@@ -269,7 +310,7 @@ paths:
         '404':
           description: Patrol not found or access denided
 
-  /dispatch:
+  /patrols/dispatch:
     post:
       summary: Assign patrol to an existing crime
       security:
@@ -281,23 +322,18 @@ paths:
             schema:
               type: object
               properties:
-                crime_id:
-                  type: integer
-              required: [crime_id]
+                patrolId:
+                  type: string
+                crimeId:
+                  type: string
+              required: [crimeId, patrolId]
       responses:
         '200':
-          description: Patrol assigned
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DispatchResult'
-  
+          description: Patrol successfully assigned
 
   /users/register:
     post:
       summary: Register a new user
-      security:
-        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -395,33 +431,6 @@ paths:
                 properties:
                   error:
                     type: string
-
-  
-  # /admin/login:
-  #   post:
-  #     summary: Admin sign in for observe system
-  #     requestBody:
-  #       required: true
-  #       content:
-  #         application/json:
-  #           schema:
-  #             $ref: '#/components/schemas/LoginRequest'
-  #     responses:
-  #       '200':
-  #         description: Successfully authenticated
-  #         content:
-  #           application/json:
-  #             schema:
-  #               $ref: '#/components/schemas/AuthToken'
-  #       '401':
-  #         description: Unauthorized - invalid or missing credentials
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: object
-  #               properties:
-  #                 error:
-  #                  type: string
 
                 
 

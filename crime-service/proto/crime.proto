@@ -15,6 +15,7 @@ enum CrimeStatus {
 enum PatrolStatus{
     AVAILABLE = 0;
     BUSY = 1;
+    OFF_DUTY = 2;
 }
 
 message Location{
@@ -45,7 +46,7 @@ message CrimeReportRequest{
 
 message UpdateCrimeReportRequest{
     string id = 1;
-    string reporter_id = 2;
+    optional string reporter_id = 2;
     optional string patrol_id = 3; 
     optional string description = 4;
     optional CrimeStatus status = 5;

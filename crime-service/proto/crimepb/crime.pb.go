@@ -76,6 +76,7 @@ type PatrolStatus int32
 const (
 	PatrolStatus_AVAILABLE PatrolStatus = 0
 	PatrolStatus_BUSY      PatrolStatus = 1
+	PatrolStatus_OFF_DUTY  PatrolStatus = 2
 )
 
 // Enum value maps for PatrolStatus.
@@ -83,10 +84,12 @@ var (
 	PatrolStatus_name = map[int32]string{
 		0: "AVAILABLE",
 		1: "BUSY",
+		2: "OFF_DUTY",
 	}
 	PatrolStatus_value = map[string]int32{
 		"AVAILABLE": 0,
 		"BUSY":      1,
+		"OFF_DUTY":  2,
 	}
 )
 
@@ -364,7 +367,7 @@ func (x *CrimeReportRequest) GetLocation() *Location {
 type UpdateCrimeReportRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	ReporterId    string                 `protobuf:"bytes,2,opt,name=reporter_id,json=reporterId,proto3" json:"reporter_id,omitempty"`
+	ReporterId    *string                `protobuf:"bytes,2,opt,name=reporter_id,json=reporterId,proto3,oneof" json:"reporter_id,omitempty"`
 	PatrolId      *string                `protobuf:"bytes,3,opt,name=patrol_id,json=patrolId,proto3,oneof" json:"patrol_id,omitempty"`
 	Description   *string                `protobuf:"bytes,4,opt,name=description,proto3,oneof" json:"description,omitempty"`
 	Status        *CrimeStatus           `protobuf:"varint,5,opt,name=status,proto3,enum=crimebroker.CrimeStatus,oneof" json:"status,omitempty"`
@@ -411,8 +414,8 @@ func (x *UpdateCrimeReportRequest) GetId() string {
 }
 
 func (x *UpdateCrimeReportRequest) GetReporterId() string {
-	if x != nil {
-		return x.ReporterId
+	if x != nil && x.ReporterId != nil {
+		return *x.ReporterId
 	}
 	return ""
 }
@@ -732,15 +735,16 @@ const file_crime_proto_rawDesc = "" +
 	"\vreporter_id\x18\x01 \x01(\tR\n" +
 	"reporterId\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x121\n" +
-	"\blocation\x18\x03 \x01(\v2\x15.crimebroker.LocationR\blocation\"\xb9\x02\n" +
+	"\blocation\x18\x03 \x01(\v2\x15.crimebroker.LocationR\blocation\"\xce\x02\n" +
 	"\x18UpdateCrimeReportRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1f\n" +
-	"\vreporter_id\x18\x02 \x01(\tR\n" +
-	"reporterId\x12 \n" +
-	"\tpatrol_id\x18\x03 \x01(\tH\x00R\bpatrolId\x88\x01\x01\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tH\x01R\vdescription\x88\x01\x01\x125\n" +
-	"\x06status\x18\x05 \x01(\x0e2\x18.crimebroker.CrimeStatusH\x02R\x06status\x88\x01\x01\x126\n" +
-	"\blocation\x18\x06 \x01(\v2\x15.crimebroker.LocationH\x03R\blocation\x88\x01\x01B\f\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12$\n" +
+	"\vreporter_id\x18\x02 \x01(\tH\x00R\n" +
+	"reporterId\x88\x01\x01\x12 \n" +
+	"\tpatrol_id\x18\x03 \x01(\tH\x01R\bpatrolId\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\x04 \x01(\tH\x02R\vdescription\x88\x01\x01\x125\n" +
+	"\x06status\x18\x05 \x01(\x0e2\x18.crimebroker.CrimeStatusH\x03R\x06status\x88\x01\x01\x126\n" +
+	"\blocation\x18\x06 \x01(\v2\x15.crimebroker.LocationH\x04R\blocation\x88\x01\x01B\x0e\n" +
+	"\f_reporter_idB\f\n" +
 	"\n" +
 	"_patrol_idB\x0e\n" +
 	"\f_descriptionB\t\n" +
@@ -779,10 +783,11 @@ const file_crime_proto_rawDesc = "" +
 	"\vCrimeStatus\x12\a\n" +
 	"\x03NEW\x10\x00\x12\f\n" +
 	"\bASSIGNED\x10\x01\x12\f\n" +
-	"\bRESOLVED\x10\x02*'\n" +
+	"\bRESOLVED\x10\x02*5\n" +
 	"\fPatrolStatus\x12\r\n" +
 	"\tAVAILABLE\x10\x00\x12\b\n" +
-	"\x04BUSY\x10\x012\x9e\x03\n" +
+	"\x04BUSY\x10\x01\x12\f\n" +
+	"\bOFF_DUTY\x10\x022\x9e\x03\n" +
 	"\fCrimeService\x12M\n" +
 	"\fGetAllCrimes\x12\x1d.crimebroker.GetCrimesRequest\x1a\x1e.crimebroker.GetCrimesResponse\x12S\n" +
 	"\x14SubmitNewCrimeReport\x12\x1f.crimebroker.CrimeReportRequest\x1a\x1a.crimebroker.CrimeResponse\x12M\n" +

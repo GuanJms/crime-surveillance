@@ -141,6 +141,22 @@ func (ns NullUserRole) Value() (driver.Value, error) {
 	return string(ns.UserRole), nil
 }
 
+type Crime struct {
+	ID          pgtype.UUID      `db:"id"`
+	ReporterID  pgtype.UUID      `db:"reporter_id"`
+	PatrolID    pgtype.UUID      `db:"patrol_id"`
+	Description pgtype.Text      `db:"description"`
+	Status      CrimeStatus      `db:"status"`
+	Street      pgtype.Text      `db:"street"`
+	City        pgtype.Text      `db:"city"`
+	State       pgtype.Text      `db:"state"`
+	Latitude    pgtype.Float8    `db:"latitude"`
+	Longitude   pgtype.Float8    `db:"longitude"`
+	ReportedAt  pgtype.Timestamp `db:"reported_at"`
+	CreatedAt   pgtype.Timestamp `db:"created_at"`
+	UpdatedAt   pgtype.Timestamp `db:"updated_at"`
+}
+
 type PatrolProfile struct {
 	UserID      pgtype.UUID      `db:"user_id"`
 	OfficerID   string           `db:"officer_id"`
@@ -153,4 +169,15 @@ type PatrolProfile struct {
 	Longitude   pgtype.Float8    `db:"longitude"`
 	CreatedAt   pgtype.Timestamp `db:"created_at"`
 	UpdatedAt   pgtype.Timestamp `db:"updated_at"`
+}
+
+type User struct {
+	ID           pgtype.UUID      `db:"id"`
+	Username     string           `db:"username"`
+	PasswordHash string           `db:"password_hash"`
+	Role         UserRole         `db:"role"`
+	CreatedAt    pgtype.Timestamp `db:"created_at"`
+	UpdatedAt    pgtype.Timestamp `db:"updated_at"`
+	LastLogin    pgtype.Timestamp `db:"last_login"`
+	LastActivity pgtype.Timestamp `db:"last_activity"`
 }

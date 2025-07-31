@@ -36,21 +36,26 @@ func NewPatrolBrokerHandler() (*PatrolBrokerHandler, error) {
 
 func (h *PatrolBrokerHandler) AddTo(r chi.Router) {
 	r.Route("/patrols", func(patrols chi.Router) {
-		patrols.Group(func(protected chi.Router) {
-			protected.Use(authmiddleware.JWTMiddleware(utils.Secret))
-			protected.With(authmiddleware.RequireRole("ADMIN")).Post("/register", h.RegisterNewPatrol)
-			protected.With(authmiddleware.RequireRole("DISPATCHER", "ADMIN")).Get("/register", h.GetAllPatrolInfo)
+		patrols.Group(func(p chi.Router) {
+			p.Use(authmiddleware.JWTMiddleware(utils.Secret))
+			p.With(authmiddleware.RequireRole("ADMIN")).Post("/register", h.RegisterNewPatrol)
+			p.With(authmiddleware.RequireRole("DISPATCHER", "ADMIN")).Get("/register", h.GetAllPatrolInfo)
+
+			p.With(authmiddleware.RequireRole("PATROL")).Put("/", h.PutPatrolInfo)
+			p.With(authmiddleware.RequireRole("PATROL")).Patch("/", h.PatchPatrolInfo)
+			p.With(authmiddleware.RequireRole("PATROL")).Put("/status", h.UpdatePatrolStatus)
+			p.With(authmiddleware.RequireRole("PATROL")).Put("/location", h.UpdatePatrolLocation)
+			p.With(authmiddleware.RequireRole("DISPATCHER", "ADMIN")).Post("/dispatch", h.AssignPatrolToCrime)
 		})
-		// TODO: implement new authroziation for Update
+
 		patrols.Route("/{id}", func(idRouter chi.Router) {
-			idRouter.Put("/", h.PutPatrolInfo)
-			idRouter.Patch("/", h.PatchPatrolInfo)
-			idRouter.Put("/status", h.UpdatePatrolStatus)
-			idRouter.Put("/location", h.UpdatePatrolLocation)
+			idRouter.Use(authmiddleware.JWTMiddleware(utils.Secret))
+			idRouter.With(authmiddleware.RequireRole("ADMIN")).Put("/", h.PutPatrolInfo)
+			idRouter.With(authmiddleware.RequireRole("ADMIN")).Patch("/", h.PatchPatrolInfo)
+			idRouter.With(authmiddleware.RequireRole("DISPATCHER", "ADMIN")).Put("/status", h.UpdatePatrolStatus)
+			idRouter.With(authmiddleware.RequireRole("DISPATCHER", "ADMIN")).Put("/location", h.UpdatePatrolLocation)
 		})
-
 	})
-
 }
 
 func (h *PatrolBrokerHandler) RegisterNewPatrol(w http.ResponseWriter, r *http.Request) {
@@ -189,8 +194,22 @@ func (h *PatrolBrokerHandler) UpdatePatrolLocation(w http.ResponseWriter, r *htt
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
+	claims, ok := authmiddleware.GetClaims(r)
+	if !ok {
+		http.Error(w, "failed to obtain claims from auto token", http.StatusBadRequest)
+	}
+
 	var reqDTO UpdatePatrolLocationRequestDTO
-	reqDTO.UserID = chi.URLParam(r, "id")
+
+	for _, role := range claims.Roles {
+		switch role {
+		case "ADMIN", "DISPATCHER":
+			reqDTO.UserID = chi.URLParam(r, "id")
+		case "PATROL":
+			reqDTO.UserID = claims.Subject
+		}
+	}
+
 	if err := json.NewDecoder(r.Body).Decode(&reqDTO); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -213,10 +232,43 @@ func (h *PatrolBrokerHandler) UpdatePatrolLocation(w http.ResponseWriter, r *htt
 	}
 
 	utils.WriteJSON(w, http.StatusOK, resp)
-
 }
+
 func (h *PatrolBrokerHandler) AssignPatrolToCrime(w http.ResponseWriter, r *http.Request) {
-	log.Panic("not implemented")
+	if h.GrpcConn == nil {
+		http.Error(w, "no gprc connection", http.StatusInternalServerError)
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	var reqDTO AssignPatrolToCrimeRequestDTO
+	if err := json.NewDecoder(r.Body).Decode(&reqDTO); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	log.Printf("Received assign patrol to crime request: %v", reqDTO)
+
+	req, err := reqDTO.ToProto()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	log.Printf("Converted to assign patrol to crime proto request: %v", req)
+
+	resp, err := h.GrpcClient.AssignPatrolToCrime(ctx, req)
+	log.Printf("Assigned patrol to crime response: %v", resp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if !resp.Success {
+		http.Error(w, ptr.DeferOrZero(resp.Message), http.StatusInternalServerError)
+		return
+	}
+	utils.WriteJSON(w, http.StatusOK, resp)
 }
 func (h *PatrolBrokerHandler) UpdatePatrolStatus(w http.ResponseWriter, r *http.Request) {
 	if h.GrpcConn == nil {
@@ -227,8 +279,22 @@ func (h *PatrolBrokerHandler) UpdatePatrolStatus(w http.ResponseWriter, r *http.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
+	claims, ok := authmiddleware.GetClaims(r)
+	if !ok {
+		http.Error(w, "failed to obtain claims from auto token", http.StatusBadRequest)
+	}
+
 	var reqDTO UpdatePatrolStatusRequestDTO
-	reqDTO.PatrolId = chi.URLParam(r, "id")
+
+	for _, role := range claims.Roles {
+		switch role {
+		case "ADMIN", "DISPATCHER":
+			reqDTO.PatrolId = chi.URLParam(r, "id")
+		case "PATROL":
+			reqDTO.PatrolId = claims.Subject
+		}
+	}
+
 	if err := json.NewDecoder(r.Body).Decode(&reqDTO); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

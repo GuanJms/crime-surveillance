@@ -97,6 +97,15 @@ generate_proto_patrol_service:
 	--proto_path=. patrol.proto
 	@echo "Done!"
 
+	@echo "Generate patrol-service crime proto file"
+	cd ../patrol-service/data/crime_repo/proto && \
+	protoc --go_out=. --go-grpc_out=. \
+	--experimental_allow_proto3_optional \
+	--proto_path=. crime.proto
+	@echo "Done!"
+
+
+
 generate_sqlc_patrol_service:
 	@echo "Generate patrol-service sqlc file"
 	cd ../patrol-service && \

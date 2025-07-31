@@ -84,12 +84,19 @@ func NewCrimeFromProtoUpdateRequest(req *crimepb.UpdateCrimeReportRequest) (*Cri
 		return nil, errors.New("Crime report request is empty")
 	}
 
+	var reporterId string
+	if req.ReporterId != nil {
+		reporterId = *req.ReporterId
+	} else {
+		return nil, errors.New("reporter id is required")
+	}
+
 	description := DeferOrZero(req.Description)
 	location := DeferOrZero(req.Location)
 	patrol_id := DeferOrZero(req.PatrolId)
 	return &Crime{
 		ID:          req.Id,
-		ReporterID:  req.ReporterId,
+		ReporterID:  reporterId,
 		Description: description,
 		PatrolID:    patrol_id,
 		Status:      req.Status.String(),
@@ -125,7 +132,7 @@ func NewCrimeUpdateFromProtoUpdateRequest(req *crimepb.UpdateCrimeReportRequest)
 
 	return &CrimeUpdate{
 		ID:             req.Id,
-		ReporterID:     &req.ReporterId,
+		ReporterID:     req.ReporterId,
 		Status:         statusStr,
 		PatrolID:       req.PatrolId,
 		Description:    req.Description,

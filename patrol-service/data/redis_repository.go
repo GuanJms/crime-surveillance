@@ -111,12 +111,12 @@ func (*RedisRepository) parseRedisUserLocationKeyForUserID(key string) string {
 }
 
 func (repo *RedisRepository) SyncPatrolLocation() error {
-	log.Printf("Syncing patrol location")
+	// log.Printf("Syncing patrol location")
 	dirtyIDs, err := repo.ReadRemovePatrolDirtyKeys()
 	if err != nil {
 		return err
 	}
-	log.Printf("Dirty IDs: %v", dirtyIDs)
+	// log.Printf("Dirty IDs: %v", dirtyIDs)
 	for _, redisKey := range dirtyIDs {
 		log.Printf("Processing dirty ID: %s", redisKey)
 		ctx, cancel := context.WithTimeout(context.Background(), fastdbTimeout)
