@@ -20,6 +20,8 @@
 *.test
 crimeServiceApp
 brokerServiceApp
+authServiceApp
+patrolServiceApp
 
 # Vendor directory
 /vendor/
