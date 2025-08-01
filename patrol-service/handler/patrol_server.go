@@ -55,10 +55,12 @@ func (s *PatrolServer) GetAllPatrolInfo(ctx context.Context, req *patrolpb.GetPa
 	if err != nil {
 		return nil, err
 	}
+	// log.Printf("Patrols: %v", patrols)
 	patrolsProto, err := data.PatrolsToProto(patrols)
 	if err != nil {
 		return nil, err
 	}
+	// log.Printf("PatrolsProto: %v", patrolsProto)
 	return &patrolpb.GetPatrolInfoResponse{
 		Patrols: patrolsProto,
 		Success: true,

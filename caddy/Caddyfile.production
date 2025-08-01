@@ -1,0 +1,40 @@
+{
+    email   james.guan.data@gmail.com
+}
+
+(static) {
+	@static {
+		file
+		path *.ico *.css *.js *.gif *.jpg *.jpeg *.png *.svg *.woff *.json
+	}
+	header @static Cache-Control max-age=5184000
+}
+
+(security) {
+	header {
+		# enable HSTS
+		Strict-Transport-Security max-age=31536000;
+		# disable clients from sniffing the media type
+		X-Content-Type-Options nosniff
+		# keep referrer data off of HTTP connections
+		Referrer-Policy no-referrer-when-downgrade
+	}
+}
+
+crime-api.james-guan.info {
+	encode zstd gzip
+	import static
+
+	# Route API requests to broker service
+	@api {
+		path /users/* /crimes/* /patrols/* /admin/*
+	}
+	reverse_proxy @api http://broker-service:8080
+
+	# Route everything else to frontend
+	reverse_proxy http://front-end:80
+}
+
+broker.james-guan.info {
+	reverse_proxy http://broker-service:8080
+}

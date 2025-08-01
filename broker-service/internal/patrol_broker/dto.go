@@ -4,7 +4,6 @@ import (
 	"brokerServiceApp/internal/patrol_broker/proto/patrolpb"
 	"brokerServiceApp/internal/ptr"
 	"fmt"
-	"log"
 )
 
 const nullLocation = -999.0
@@ -86,13 +85,15 @@ func (dto *PatrolDTO) FromProto(proto *patrolpb.Patrol) *PatrolDTO {
 		dto.Status = &status
 	}
 
-	// log.Printf("SO FAR %v", p)
+	// log.Printf("Location: %v", proto.Location)
 
 	if proto.Location != nil {
 		dto.Location = &LocationDTO{
-			Street: &proto.Location.Street,
-			City:   &proto.Location.City,
-			State:  &proto.Location.State,
+			Street:    &proto.Location.Street,
+			City:      &proto.Location.City,
+			State:     &proto.Location.State,
+			Latitude:  &proto.Location.Latitude,
+			Longitude: &proto.Location.Longitude,
 		}
 	}
 	// log.Printf("SO FAR %v", p)
@@ -109,7 +110,7 @@ func (dto *UpdatePatrolInfoRequestDTO) ToProto() *patrolpb.UpdatePatrolInfoReque
 		status = ptr.Of(patrolpb.PatrolStatus(patrolpb.PatrolStatus_value[*dto.Status]))
 	}
 
-	log.Printf("Status: %v", status)
+	// log.Printf("Status: %v", status)
 
 	return &patrolpb.UpdatePatrolInfoRequest{
 		UserId:      dto.UserId,

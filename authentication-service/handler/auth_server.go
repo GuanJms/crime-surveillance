@@ -33,6 +33,7 @@ func (s *AuthServer) CreateNewUser(ctx context.Context, req *authpb.NewUserReque
 	resp := &authpb.NewUserResponse{
 		Token:   token,
 		Success: true,
+		Role:    "CITIZEN", // hardcoded base user
 		Message: "Successfully created new user",
 	}
 	return resp, nil
@@ -68,6 +69,7 @@ func (s *AuthServer) UserLogin(ctx context.Context, cred *authpb.UserLoginCreden
 
 	return &authpb.UserLoginResposne{
 		Token:   token,
+		Role:    *user.Role,
 		Success: true,
 		Message: "successfully created a user login response",
 	}, nil
@@ -84,5 +86,17 @@ func (s *AuthServer) ChangeUserRole(ctx context.Context, req *authpb.ChangeUserR
 	return &authpb.ChangeUserRoleResponse{
 		Success: true,
 		Message: "successfully updated the role",
+	}, nil
+}
+
+func (s *AuthServer) GetAllUsers(ctx context.Context, req *authpb.GetAllUsersRequest) (*authpb.GetAllUsersResponse, error) {
+	users, err := s.AuthModel.Repo.GetAllUsers()
+	if err != nil {
+		return nil, err
+	}
+	usersProto := data.UsersToProto(users)
+
+	return &authpb.GetAllUsersResponse{
+		Users: usersProto,
 	}, nil
 }

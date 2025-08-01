@@ -79,10 +79,11 @@ type User struct {
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	PasswordHash  string                 `protobuf:"bytes,3,opt,name=password_hash,json=passwordHash,proto3" json:"password_hash,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	LastLogin     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=last_login,json=lastLogin,proto3" json:"last_login,omitempty"`
-	LastActivity  *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=last_activity,json=lastActivity,proto3" json:"last_activity,omitempty"`
+	Role          UserRole               `protobuf:"varint,4,opt,name=role,proto3,enum=authbroker.UserRole" json:"role,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	LastLogin     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=last_login,json=lastLogin,proto3" json:"last_login,omitempty"`
+	LastActivity  *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=last_activity,json=lastActivity,proto3" json:"last_activity,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -136,6 +137,13 @@ func (x *User) GetPasswordHash() string {
 		return x.PasswordHash
 	}
 	return ""
+}
+
+func (x *User) GetRole() UserRole {
+	if x != nil {
+		return x.Role
+	}
+	return UserRole_CITIZEN
 }
 
 func (x *User) GetCreatedAt() *timestamppb.Timestamp {
@@ -326,7 +334,8 @@ type NewUserResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
 	Success       bool                   `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
-	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	Role          string                 `protobuf:"bytes,3,opt,name=role,proto3" json:"role,omitempty"`
+	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -373,6 +382,13 @@ func (x *NewUserResponse) GetSuccess() bool {
 		return x.Success
 	}
 	return false
+}
+
+func (x *NewUserResponse) GetRole() string {
+	if x != nil {
+		return x.Role
+	}
+	return ""
 }
 
 func (x *NewUserResponse) GetMessage() string {
@@ -542,7 +558,8 @@ type UserLoginResposne struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
 	Success       bool                   `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
-	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	Role          string                 `protobuf:"bytes,3,opt,name=role,proto3" json:"role,omitempty"`
+	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -591,11 +608,98 @@ func (x *UserLoginResposne) GetSuccess() bool {
 	return false
 }
 
+func (x *UserLoginResposne) GetRole() string {
+	if x != nil {
+		return x.Role
+	}
+	return ""
+}
+
 func (x *UserLoginResposne) GetMessage() string {
 	if x != nil {
 		return x.Message
 	}
 	return ""
+}
+
+type GetAllUsersResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Users         []*User                `protobuf:"bytes,1,rep,name=users,proto3" json:"users,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAllUsersResponse) Reset() {
+	*x = GetAllUsersResponse{}
+	mi := &file_auth_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAllUsersResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAllUsersResponse) ProtoMessage() {}
+
+func (x *GetAllUsersResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAllUsersResponse.ProtoReflect.Descriptor instead.
+func (*GetAllUsersResponse) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *GetAllUsersResponse) GetUsers() []*User {
+	if x != nil {
+		return x.Users
+	}
+	return nil
+}
+
+type GetAllUsersRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAllUsersRequest) Reset() {
+	*x = GetAllUsersRequest{}
+	mi := &file_auth_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAllUsersRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAllUsersRequest) ProtoMessage() {}
+
+func (x *GetAllUsersRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAllUsersRequest.ProtoReflect.Descriptor instead.
+func (*GetAllUsersRequest) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{10}
 }
 
 var File_auth_proto protoreflect.FileDescriptor
@@ -604,18 +708,19 @@ const file_auth_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
 	"auth.proto\x12\n" +
-	"authbroker\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc9\x02\n" +
+	"authbroker\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf3\x02\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12#\n" +
-	"\rpassword_hash\x18\x03 \x01(\tR\fpasswordHash\x129\n" +
+	"\rpassword_hash\x18\x03 \x01(\tR\fpasswordHash\x12(\n" +
+	"\x04role\x18\x04 \x01(\x0e2\x14.authbroker.UserRoleR\x04role\x129\n" +
 	"\n" +
-	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x129\n" +
+	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x129\n" +
 	"\n" +
-	"last_login\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tlastLogin\x12?\n" +
-	"\rlast_activity\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\flastActivity\"!\n" +
+	"last_login\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tlastLogin\x12?\n" +
+	"\rlast_activity\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\flastActivity\"!\n" +
 	"\tAuthToken\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\"p\n" +
 	"\x15CreateNewUserResponse\x12\x18\n" +
@@ -625,11 +730,12 @@ const file_auth_proto_rawDesc = "" +
 	"\x06_token\"H\n" +
 	"\x0eNewUserRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"[\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"o\n" +
 	"\x0fNewUserResponse\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12\x18\n" +
-	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x03 \x01(\tR\amessage\"Q\n" +
+	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x12\n" +
+	"\x04role\x18\x03 \x01(\tR\x04role\x12\x18\n" +
+	"\amessage\x18\x04 \x01(\tR\amessage\"Q\n" +
 	"\x15ChangeUserRoleRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12(\n" +
 	"\x04role\x18\x02 \x01(\x0e2\x14.authbroker.UserRoleR\x04role\"L\n" +
@@ -638,22 +744,27 @@ const file_auth_proto_rawDesc = "" +
 	"\amessage\x18\x02 \x01(\tR\amessage\"N\n" +
 	"\x14UserLoginCredentials\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"]\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"q\n" +
 	"\x11UserLoginResposne\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12\x18\n" +
-	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x03 \x01(\tR\amessage*>\n" +
+	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x12\n" +
+	"\x04role\x18\x03 \x01(\tR\x04role\x12\x18\n" +
+	"\amessage\x18\x04 \x01(\tR\amessage\"=\n" +
+	"\x13GetAllUsersResponse\x12&\n" +
+	"\x05users\x18\x01 \x03(\v2\x10.authbroker.UserR\x05users\"\x14\n" +
+	"\x12GetAllUsersRequest*>\n" +
 	"\bUserRole\x12\v\n" +
 	"\aCITIZEN\x10\x00\x12\n" +
 	"\n" +
 	"\x06PATROL\x10\x01\x12\x0e\n" +
 	"\n" +
 	"DISPATCHER\x10\x02\x12\t\n" +
-	"\x05ADMIN\x10\x032\xfe\x01\n" +
+	"\x05ADMIN\x10\x032\xce\x02\n" +
 	"\vAuthService\x12H\n" +
 	"\rCreateNewUser\x12\x1a.authbroker.NewUserRequest\x1a\x1b.authbroker.NewUserResponse\x12W\n" +
 	"\x0eChangeUserRole\x12!.authbroker.ChangeUserRoleRequest\x1a\".authbroker.ChangeUserRoleResponse\x12L\n" +
-	"\tUserLogin\x12 .authbroker.UserLoginCredentials\x1a\x1d.authbroker.UserLoginResposneB\x11Z\x0f./authpb;authpbb\x06proto3"
+	"\tUserLogin\x12 .authbroker.UserLoginCredentials\x1a\x1d.authbroker.UserLoginResposne\x12N\n" +
+	"\vGetAllUsers\x12\x1e.authbroker.GetAllUsersRequest\x1a\x1f.authbroker.GetAllUsersResponseB\x11Z\x0f./authpb;authpbb\x06proto3"
 
 var (
 	file_auth_proto_rawDescOnce sync.Once
@@ -668,7 +779,7 @@ func file_auth_proto_rawDescGZIP() []byte {
 }
 
 var file_auth_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_auth_proto_goTypes = []any{
 	(UserRole)(0),                  // 0: authbroker.UserRole
 	(*User)(nil),                   // 1: authbroker.User
@@ -680,25 +791,31 @@ var file_auth_proto_goTypes = []any{
 	(*ChangeUserRoleResponse)(nil), // 7: authbroker.ChangeUserRoleResponse
 	(*UserLoginCredentials)(nil),   // 8: authbroker.UserLoginCredentials
 	(*UserLoginResposne)(nil),      // 9: authbroker.UserLoginResposne
-	(*timestamppb.Timestamp)(nil),  // 10: google.protobuf.Timestamp
+	(*GetAllUsersResponse)(nil),    // 10: authbroker.GetAllUsersResponse
+	(*GetAllUsersRequest)(nil),     // 11: authbroker.GetAllUsersRequest
+	(*timestamppb.Timestamp)(nil),  // 12: google.protobuf.Timestamp
 }
 var file_auth_proto_depIdxs = []int32{
-	10, // 0: authbroker.User.created_at:type_name -> google.protobuf.Timestamp
-	10, // 1: authbroker.User.updated_at:type_name -> google.protobuf.Timestamp
-	10, // 2: authbroker.User.last_login:type_name -> google.protobuf.Timestamp
-	10, // 3: authbroker.User.last_activity:type_name -> google.protobuf.Timestamp
-	0,  // 4: authbroker.ChangeUserRoleRequest.role:type_name -> authbroker.UserRole
-	4,  // 5: authbroker.AuthService.CreateNewUser:input_type -> authbroker.NewUserRequest
-	6,  // 6: authbroker.AuthService.ChangeUserRole:input_type -> authbroker.ChangeUserRoleRequest
-	8,  // 7: authbroker.AuthService.UserLogin:input_type -> authbroker.UserLoginCredentials
-	5,  // 8: authbroker.AuthService.CreateNewUser:output_type -> authbroker.NewUserResponse
-	7,  // 9: authbroker.AuthService.ChangeUserRole:output_type -> authbroker.ChangeUserRoleResponse
-	9,  // 10: authbroker.AuthService.UserLogin:output_type -> authbroker.UserLoginResposne
-	8,  // [8:11] is the sub-list for method output_type
-	5,  // [5:8] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	0,  // 0: authbroker.User.role:type_name -> authbroker.UserRole
+	12, // 1: authbroker.User.created_at:type_name -> google.protobuf.Timestamp
+	12, // 2: authbroker.User.updated_at:type_name -> google.protobuf.Timestamp
+	12, // 3: authbroker.User.last_login:type_name -> google.protobuf.Timestamp
+	12, // 4: authbroker.User.last_activity:type_name -> google.protobuf.Timestamp
+	0,  // 5: authbroker.ChangeUserRoleRequest.role:type_name -> authbroker.UserRole
+	1,  // 6: authbroker.GetAllUsersResponse.users:type_name -> authbroker.User
+	4,  // 7: authbroker.AuthService.CreateNewUser:input_type -> authbroker.NewUserRequest
+	6,  // 8: authbroker.AuthService.ChangeUserRole:input_type -> authbroker.ChangeUserRoleRequest
+	8,  // 9: authbroker.AuthService.UserLogin:input_type -> authbroker.UserLoginCredentials
+	11, // 10: authbroker.AuthService.GetAllUsers:input_type -> authbroker.GetAllUsersRequest
+	5,  // 11: authbroker.AuthService.CreateNewUser:output_type -> authbroker.NewUserResponse
+	7,  // 12: authbroker.AuthService.ChangeUserRole:output_type -> authbroker.ChangeUserRoleResponse
+	9,  // 13: authbroker.AuthService.UserLogin:output_type -> authbroker.UserLoginResposne
+	10, // 14: authbroker.AuthService.GetAllUsers:output_type -> authbroker.GetAllUsersResponse
+	11, // [11:15] is the sub-list for method output_type
+	7,  // [7:11] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_auth_proto_init() }
@@ -713,7 +830,7 @@ func file_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_proto_rawDesc), len(file_auth_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   9,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -157,3 +157,28 @@ func (p *PostgresRepository) ChangeUserRoleTo(id string, role string) error {
 	}
 	return nil
 }
+
+func (p *PostgresRepository) GetAllUsers() ([]*User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	query := `SELECT id, username, role, created_at, updated_at, last_login, last_activity FROM users`
+
+	rows, err := p.Conn.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []*User
+
+	for rows.Next() {
+		var u User
+		err := rows.Scan(&u.ID, &u.Username, &u.Role, &u.CreatedAt, &u.UpdatedAt, &u.LastLogin, &u.LastActive)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, &u)
+	}
+	return users, nil
+}

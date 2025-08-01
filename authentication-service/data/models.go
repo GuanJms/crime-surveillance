@@ -4,6 +4,8 @@ import (
 	"authServiceApp/proto/authpb"
 	"database/sql"
 	"time"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -53,4 +55,20 @@ func CredentialsFromRequest(req *authpb.UserLoginCredentials) *UserLoginCredenti
 		Username: req.Username,
 		Password: req.Password,
 	}
+}
+
+func UsersToProto(users []*User) []*authpb.User {
+	usersProto := make([]*authpb.User, len(users))
+	for i, user := range users {
+		usersProto[i] = &authpb.User{
+			Id:           DeferOrZero(user.ID),
+			Username:     DeferOrZero(user.Username),
+			Role:         authpb.UserRole(authpb.UserRole_value[DeferOrZero(user.Role)]),
+			CreatedAt:    timestamppb.New(DeferOrZero(user.CreatedAt)),
+			UpdatedAt:    timestamppb.New(DeferOrZero(user.UpdatedAt)),
+			LastLogin:    timestamppb.New(DeferOrZero(user.LastLogin)),
+			LastActivity: timestamppb.New(DeferOrZero(user.LastActive)),
+		}
+	}
+	return usersProto
 }

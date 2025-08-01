@@ -32,6 +32,19 @@ func NewAuthBrokerHandler() (*AuthBrokerHandler, error) {
 	}, nil
 }
 
+func (h *AuthBrokerHandler) AddTo(r chi.Router) {
+	r.Route("/users", func(users chi.Router) {
+		users.Post("/login", h.UserLogin)
+		users.Post("/register", h.CreateNewUser)
+	})
+
+	r.Group(func(protected chi.Router) {
+		protected.Use(authmiddleware.JWTMiddleware(utils.Secret))
+		protected.With(authmiddleware.RequireRole("ADMIN")).Patch("/admin/users/{id}/role", h.ChangeUserRole)
+		protected.With(authmiddleware.RequireRole("ADMIN")).Get("/admin/users", h.GetAllUsers)
+	})
+}
+
 func (h *AuthBrokerHandler) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 	if h.GrpcConn == nil {
 		utils.ErrorJSON(w, errors.New("authentication broker handler has no grpc connection"), http.StatusInternalServerError)
@@ -122,14 +135,24 @@ func (h *AuthBrokerHandler) UserLogin(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, http.StatusOK, resp)
 }
 
-func (h *AuthBrokerHandler) AddTo(r chi.Router) {
-	r.Route("/users", func(users chi.Router) {
-		users.Post("/login", h.UserLogin)
-		users.Post("/register", h.CreateNewUser)
-	})
+func (h *AuthBrokerHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	if h.GrpcConn == nil {
+		http.Error(w, "Authentication broker handler has no grpc connection", http.StatusInternalServerError)
+		return
+	}
 
-	r.Group(func(protected chi.Router) {
-		protected.Use(authmiddleware.JWTMiddleware(utils.Secret))
-		protected.With(authmiddleware.RequireRole("ADMIN")).Patch("/admin/users/{id}/role", h.ChangeUserRole)
-	})
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	req := authpb.GetAllUsersRequest{}
+
+	resp, err := h.GrpcClient.GetAllUsers(ctx, &req)
+
+	usersDTO := UsersFromProto(resp.Users)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	utils.WriteJSON(w, http.StatusOK, usersDTO)
 }

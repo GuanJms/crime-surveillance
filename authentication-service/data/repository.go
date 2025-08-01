@@ -6,4 +6,5 @@ type Repository interface {
 	GetUserInfo(username string) (*User, error)
 	UpdateLoginTime(user *User) error
 	ChangeUserRoleTo(id string, role string) error
+	GetAllUsers() ([]*User, error)
 }

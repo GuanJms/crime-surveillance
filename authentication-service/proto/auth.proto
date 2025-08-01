@@ -17,10 +17,11 @@ message User{
     string id = 1;
     string username = 2;
     string password_hash = 3;
-    google.protobuf.Timestamp created_at = 4;
-    google.protobuf.Timestamp updated_at = 5;
-    google.protobuf.Timestamp last_login = 6;
-    google.protobuf.Timestamp last_activity = 7;
+    UserRole role = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
+    google.protobuf.Timestamp last_login = 7;
+    google.protobuf.Timestamp last_activity = 8;
 }
 
 message AuthToken {
@@ -41,7 +42,8 @@ message NewUserRequest{
 message NewUserResponse{
     string token = 1;
     bool success = 2;
-    string message = 3;
+    string role = 3;
+    string message = 4;
 }
 
 message ChangeUserRoleRequest{
@@ -62,11 +64,20 @@ message UserLoginCredentials{
 message UserLoginResposne{
     string token = 1;
     bool success = 2;
-    string message = 3;
+    string role = 3;
+    string message = 4;
+}
+
+message GetAllUsersResponse{
+    repeated User users = 1;
+}
+
+message GetAllUsersRequest{
 }
 
 service AuthService{
     rpc CreateNewUser(NewUserRequest) returns (NewUserResponse);
     rpc ChangeUserRole(ChangeUserRoleRequest) returns (ChangeUserRoleResponse);
     rpc UserLogin(UserLoginCredentials) returns (UserLoginResposne);
+    rpc GetAllUsers(GetAllUsersRequest) returns (GetAllUsersResponse);
 }

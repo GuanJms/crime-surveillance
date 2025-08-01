@@ -7,7 +7,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"time"
 
@@ -42,7 +41,7 @@ func (h *CrimeBrokerHandler) AddTo(r chi.Router) {
 			protected.Post("/", h.SubmitNewCrime)
 			protected.With(authmiddleware.RequireRole("PATROL", "DISPATCHER", "ADMIN")).Put("/{id}", h.PutCrime)
 			protected.With(authmiddleware.RequireRole("PATROL", "DISPATCHER", "ADMIN")).Patch("/{id}", h.PatchCrime)
-			protected.With(authmiddleware.RequireRole("ADMIN")).Delete("/{id}", h.DeleteCrime)
+			protected.With(authmiddleware.RequireRole("PATROL", "DISPATCHER", "ADMIN")).Delete("/{id}", h.DeleteCrime)
 		})
 	})
 }
@@ -152,7 +151,7 @@ func (h *CrimeBrokerHandler) PatchCrime(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Invalid JSON during decoding request", http.StatusBadRequest)
 		return
 	}
-	log.Printf("Received update crime report request DTO - %v", reqDTO)
+	// log.Printf("Received update crime report request DTO - %v", reqDTO)
 
 	req, err := reqDTO.toProto()
 	if err != nil {

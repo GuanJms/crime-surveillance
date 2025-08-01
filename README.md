@@ -28,7 +28,7 @@ Microservices architecture increases independent deployability, scalability, and
 
 The usage of PostgreSQL is used for persistence of authentication data for better account and role management. 
 
-The usage of MongoDB is used for flexible storage of future log information.
+<!-- The usage of MongoDB is used for flexible storage of future log information. -->
 
 The usage of Redis is used for performance-critical patrol systems, where patrol state has a relatively limited user base but high-frequency updates and potential real-time streaming applications.
 

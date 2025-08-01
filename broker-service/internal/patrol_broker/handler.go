@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"time"
 
@@ -39,7 +38,7 @@ func (h *PatrolBrokerHandler) AddTo(r chi.Router) {
 		patrols.Group(func(p chi.Router) {
 			p.Use(authmiddleware.JWTMiddleware(utils.Secret))
 			p.With(authmiddleware.RequireRole("ADMIN")).Post("/register", h.RegisterNewPatrol)
-			p.With(authmiddleware.RequireRole("DISPATCHER", "ADMIN")).Get("/register", h.GetAllPatrolInfo)
+			p.With(authmiddleware.RequireRole("DISPATCHER", "PATROL", "ADMIN")).Get("/register", h.GetAllPatrolInfo)
 
 			p.With(authmiddleware.RequireRole("PATROL")).Put("/", h.PutPatrolInfo)
 			p.With(authmiddleware.RequireRole("PATROL")).Patch("/", h.PatchPatrolInfo)
@@ -135,10 +134,10 @@ func (h *PatrolBrokerHandler) PutPatrolInfo(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	log.Printf("Received put patrol information update request: %v", reqDTO)
+	// log.Printf("Received put patrol information update request: %v", reqDTO)
 
 	req := reqDTO.ToProto()
-	log.Printf("Converted to put patrol information ptoro update request: %v", req)
+	// log.Printf("Converted to put patrol information ptoro update request: %v", req)
 
 	resp, err := h.GrpcClient.PutPatrolInfo(ctx, req)
 	if err != nil {
@@ -248,7 +247,7 @@ func (h *PatrolBrokerHandler) AssignPatrolToCrime(w http.ResponseWriter, r *http
 		return
 	}
 
-	log.Printf("Received assign patrol to crime request: %v", reqDTO)
+	// log.Printf("Received assign patrol to crime request: %v", reqDTO)
 
 	req, err := reqDTO.ToProto()
 	if err != nil {
@@ -256,10 +255,10 @@ func (h *PatrolBrokerHandler) AssignPatrolToCrime(w http.ResponseWriter, r *http
 		return
 	}
 
-	log.Printf("Converted to assign patrol to crime proto request: %v", req)
+	// log.Printf("Converted to assign patrol to crime proto request: %v", req)
 
 	resp, err := h.GrpcClient.AssignPatrolToCrime(ctx, req)
-	log.Printf("Assigned patrol to crime response: %v", resp)
+	// log.Printf("Assigned patrol to crime response: %v", resp)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
