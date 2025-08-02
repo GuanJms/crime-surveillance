@@ -26,7 +26,7 @@ up_build_amd64: prepare_frontend build_crime_amd64 build_broker_amd64 build_auth
 
 build: prepare_frontend build_crime build_broker build_auth build_patrol build_frontend
 
-build_amd64: prepare_frontend build_crime_amd64 build_broker_amd64 build_auth_amd64 build_patrol_amd64 build_frontend
+build_amd64: prepare_frontend build_crime_amd64 build_broker_amd64 build_auth_amd64 build_patrol_amd64 build_frontend_amd64
 
 down:
 	@echo "Stopping docker compose..."
@@ -161,6 +161,4 @@ build_frontend_amd64:
 	@echo "Building front-end image..."
 	docker-compose build --build-arg TARGETARCH=amd64 front-end
 	@echo "Done!"
-
-
 
