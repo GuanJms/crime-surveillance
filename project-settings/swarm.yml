@@ -28,6 +28,8 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+    env_file:
+      - ../project-settings/.env
     environment:
       SECRET: ${SECRET}
 
@@ -44,6 +46,8 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+    env_file:
+      - ../project-settings/.env
     environment:
       DSN: ${DSN_TEMPLATE}
       SECRET: ${SECRET}
@@ -53,6 +57,8 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+    env_file:
+      - ../project-settings/.env
     environment:
       DSN: ${DSN_TEMPLATE}
 
@@ -61,6 +67,8 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+    env_file:
+      - ../project-settings/.env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
