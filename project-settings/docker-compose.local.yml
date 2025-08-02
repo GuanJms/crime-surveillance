@@ -47,7 +47,7 @@ services:
       mode: replicated
       replicas: 1
     environment:
-      DSN: ${DSN_TEMPLATE}
+      DSN: ${DSN}
 
   auth-service:
     build:
@@ -60,7 +60,7 @@ services:
       mode: replicated
       replicas: 1
     environment:
-      DSN: ${DSN_TEMPLATE}
+      DSN: ${DSN}
       SECRET: ${SECRET}
   
   patrol-service:
@@ -74,7 +74,7 @@ services:
       mode: replicated
       replicas: 1
     environment:
-      DSN: ${DSN_TEMPLATE}
+      DSN: ${DSN}
 
   postgres:
     image: 'postgres:16'
