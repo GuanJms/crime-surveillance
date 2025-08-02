@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"time"
 
@@ -51,6 +52,8 @@ func (h *AuthBrokerHandler) CreateNewUser(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	log.Println("Broker CreateNewUser request received")
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
@@ -58,6 +61,8 @@ func (h *AuthBrokerHandler) CreateNewUser(w http.ResponseWriter, r *http.Request
 	if err := json.NewDecoder(r.Body).Decode(&newUserRequest); err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 	}
+
+	log.Println("Broker CreateNewUser request decoded")
 
 	resp, err := h.GrpcClient.CreateNewUser(ctx, &newUserRequest) // resp - NewUserResposne
 	if err != nil {
@@ -112,6 +117,8 @@ func (h *AuthBrokerHandler) UserLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Println("Broker UserLogin request received")
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
@@ -121,6 +128,8 @@ func (h *AuthBrokerHandler) UserLogin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
+
+	log.Println("Broker UserLogin request decoded")
 
 	resp, err := h.GrpcClient.UserLogin(ctx, &req)
 	if err != nil {
