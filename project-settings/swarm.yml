@@ -20,8 +20,7 @@ services:
       replicas: 1
     env_file:
       - ../project-settings/.env
-    environment:
-      BROKER_SERVICE_URL: ${BROKER_SERVICE_URL:-http://broker-service:8080}
+
 
   broker-service:
     image: jamesguan777/crime-broker-service:1.0.0
@@ -30,8 +29,7 @@ services:
       replicas: 1
     env_file:
       - ../project-settings/.env
-    environment:
-      SECRET: ${SECRET}
+
 
   crime-service:
     image: jamesguan777/crime-service:1.0.0
