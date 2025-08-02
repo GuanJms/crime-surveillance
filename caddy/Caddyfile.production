@@ -24,6 +24,7 @@
 crime-api.james-guan.info {
 	encode zstd gzip
 	import static
+	import security
 
 	# Route API requests to broker service
 	@api {
