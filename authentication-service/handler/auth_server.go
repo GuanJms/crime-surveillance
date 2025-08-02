@@ -5,6 +5,7 @@ import (
 	"authServiceApp/proto/authpb"
 	"authServiceApp/token"
 	"context"
+	"log"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -18,6 +19,8 @@ type AuthServer struct {
 func (s *AuthServer) CreateNewUser(ctx context.Context, req *authpb.NewUserRequest) (*authpb.NewUserResponse, error) {
 	// parse new user request into auth models
 	newUser := data.NewUserFromRequest(req)
+
+	log.Println("newUser request received")
 
 	// create new user in DB
 	err := s.AuthModel.Repo.CreateUser(newUser)
@@ -41,6 +44,8 @@ func (s *AuthServer) CreateNewUser(ctx context.Context, req *authpb.NewUserReque
 
 func (s *AuthServer) UserLogin(ctx context.Context, cred *authpb.UserLoginCredentials) (*authpb.UserLoginResposne, error) {
 	credentials := data.CredentialsFromRequest(cred)
+
+	log.Println("UserLogin request received")
 
 	success, err := s.AuthModel.Repo.AuthenticateUser(credentials)
 	if err != nil {
@@ -95,6 +100,8 @@ func (s *AuthServer) GetAllUsers(ctx context.Context, req *authpb.GetAllUsersReq
 		return nil, err
 	}
 	usersProto := data.UsersToProto(users)
+
+	log.Println("GetAllUsers request received")
 
 	return &authpb.GetAllUsersResponse{
 		Users: usersProto,
