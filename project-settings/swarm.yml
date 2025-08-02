@@ -2,7 +2,7 @@ version: '3'
 
 services:
   caddy:
-    image: jamesguan777/micro-caddy-production:1.0.1
+    image: jamesguan777/micro-caddy-production:1.0.0
     deploy:
       mode: replicated
       replicas: 1
@@ -12,11 +12,6 @@ services:
     volumes:
       - ./../caddy/caddy_data:/data
       - ./../caddy/caddy_config:/config
-    healthcheck:
-      test: ["CMD", "curl", "-fk", "https://localhost"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
 
   front-end:
