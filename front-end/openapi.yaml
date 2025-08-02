@@ -6,6 +6,8 @@ info:
   version: 1.0.0
 
 servers:
+  - url: https://broker.james-guan.info
+    description: Production Server
   - url: http://localhost:8080
     description: Local Dev Server
 
