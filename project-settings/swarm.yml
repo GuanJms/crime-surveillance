@@ -62,8 +62,6 @@ services:
     deploy:
       mode: replicated
       replicas: 1
-    ports:
-      - "5435:5432"
     env_file:
       - ../project-settings/.env
     volumes:
