@@ -2,7 +2,7 @@ version: '3'
 
 services:
   caddy:
-    image: jamesguan777/micro-caddy-production:1.0.0
+    image: jamesguan777/micro-caddy-production-hybrid:1.0.0
     deploy:
       mode: replicated
       replicas: 1
