@@ -64,8 +64,6 @@ services:
       replicas: 1
     env_file:
       - ../project-settings/.env
-    ports:
-      - "5435:5432"
     volumes:
       - ./db-data/postgres/:/var/lib/postgresql/data/
       - ./init-scripts:/docker-entrypoint-initdb.d
