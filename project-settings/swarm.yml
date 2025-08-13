@@ -1,5 +1,9 @@
 version: '3'
 
+networks:
+  web:
+    external: true
+
 services:
   caddy:
     image: jamesguan777/micro-caddy-production-hybrid:1.0.0
