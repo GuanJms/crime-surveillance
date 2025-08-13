@@ -41,37 +41,20 @@ broker.james-guan.info {
 }
 
 tg.james-guan.info {
-	encode zstd gzip
-	import security
+  encode zstd gzip
+  # optional security headers here
 
-	@webhook_post {
-		path /telegram/webhook
-		method POST
-	}
-	@health_get {
-		path /healthz
-		method GET
-	}
+  @webhook {
+    path /telegram/webhook
+  }
+  reverse_proxy @webhook localhost:9095
 
-	@webhook_wrong {
-		path /telegram/webhook
-		not { method POST }
-	}
-	@health_wrong {
-		path /healthz
-		not { method GET }
-	}
-	handle @webhook_wrong { respond 405 }
-	handle @health_wrong { respond 405 }
+  @health {
+    path /healthz
+  }
+  reverse_proxy @health localhost:9095
 
-	# Choose ONE of these upstreams:
-	# If Caddy shares a network with the bot service:
-	# reverse_proxy @webhook_post telegram-bot:9095
-	# reverse_proxy @health_get  telegram-bot:9095
-
-	# If Caddy runs on host or different network and bot publishes 9095:
-	reverse_proxy @webhook_post localhost:9095
-	reverse_proxy @health_get  localhost:9095
-
-	handle { respond 404 }
+  handle {
+    respond 404
+  }
 }
