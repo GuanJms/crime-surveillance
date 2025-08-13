@@ -41,9 +41,9 @@ broker.james-guan.info {
 }
 
 tg.james-guan.info {
-	@webhook path /telegram/webhook
+	@webhook path /telegram/webhook*
 	reverse_proxy @webhook http://telegram-bot:9095
-	@health path /healthz
+	@health path /healthz*
 	reverse_proxy @health http://telegram-bot:9095
 	respond 404
 }
